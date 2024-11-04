@@ -91,10 +91,8 @@ export class UserModel {
             return {
                 message: "Usuario no encontrado."
             };
-
-        return {
-            message: "Usuario eliminado correctamente."
-        };
+        }
+        return userDeleted;
     }
 
     async getUser(id: number) {
