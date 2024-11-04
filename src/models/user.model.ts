@@ -37,7 +37,7 @@ export class UserModel {
         const isExist = await prisma.user.findUnique({ where: { email: data.email } });
         if (isExist) {
             return {
-                message: "User already exists."
+                message: "El correo ya existe."
             };
         }
 
@@ -45,7 +45,9 @@ export class UserModel {
         data.token = token;
         newAccount(data.name, data.email, data.token);
         const user = await prisma.user.create({ data });
-        return user;
+        return {
+            message: "Usuario creado correctamente."
+        };
     }
 
     async newTypeUser(data: TypeUser) {
@@ -66,9 +68,9 @@ export class UserModel {
         }
         // Verificar si el usuario ya existe
         const isExist = await prisma.user.findUnique({ where: { email: data.email } });
-        if (isExist) {
+        if (isExist && isExist.id !== id) {
             return {
-                message: "User already exists."
+                message: "El correo ya existe."
             };
         }
         data.password = await hashPassword(data.password);
@@ -76,20 +78,34 @@ export class UserModel {
             where: { id },
             data
         });
-        return user;
+        return {
+            message: "Usuario actualizado correctamente."
+        };
     }
 
     async deleteUser(id: number) {
         const userDeleted = await prisma.user.delete({
             where: { id }
         })
-        return userDeleted;
+        if (!userDeleted) {
+            return {
+                message: "Usuario no encontrado."
+            };
+
+        return {
+            message: "Usuario eliminado correctamente."
+        };
     }
 
     async getUser(id: number) {
         const user = await prisma.user.findUnique({
             where: { id }
         })
+        if(!user) {
+            return {
+                message: "Usuario no encontrado."
+            };
+        }
         return user;
     }
 
@@ -99,7 +115,7 @@ export class UserModel {
         });
         if (!user) {
             return {
-                message: "Token not found"
+                message: "El token ha vencído"
             };
         }
         const userUpdated = await prisma.user.update({
@@ -109,6 +125,8 @@ export class UserModel {
                 token: null
             }
         });
-        return userUpdated;
+        return {
+            message: "Cuenta activada correctamente"
+        };
     }
 }
