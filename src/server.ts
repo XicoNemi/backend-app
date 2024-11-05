@@ -1,6 +1,8 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+// Routes
+import userRoutes from './routes/user.routes';
 
 export class Server {
   private app: Express;
@@ -16,6 +18,7 @@ export class Server {
     this.app.get('/', (req, res) => {
       res.send('API Xiconemi');
     });
+    this.app.use('/api/users', userRoutes);
     return this.app;
   }
 
