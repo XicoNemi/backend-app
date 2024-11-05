@@ -84,14 +84,16 @@ export class UserModel {
     }
 
     async deleteUser(id: number) {
-        const userDeleted = await prisma.user.delete({
-            where: { id }
-        })
-        if (!userDeleted) {
+        const isExist = await prisma.user.findUnique({ where: { id } });
+        if (!isExist) {
             return {
                 message: "Usuario no encontrado."
             };
         }
+        const userDeleted = await prisma.user.delete({
+            where: { id }
+        })
+
         return userDeleted;
     }
 
