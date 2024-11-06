@@ -48,7 +48,8 @@ export class UserModel {
         newAccount(data.name, data.email, data.token);
         const user = await prisma.user.create({ data });
         return {
-            message: "Usuario creado correctamente."
+            id: user.id,
+            message: "Usuario creado correctamente, por favor revisa tu correo para activar tu cuenta."
         };
     }
 
@@ -129,4 +130,10 @@ export class UserModel {
             message: "Cuenta activada correctamente"
         };
     }
+
+    async getUserByEmail(email: string) {
+        return await prisma.user.findUnique({
+          where: { email },
+        });
+      }
 }
