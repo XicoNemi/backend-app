@@ -11,6 +11,8 @@ const userSchema = z.object({
     lastname: z.string().min(1, "Campo requerido."),
     email: z.string().min(1, "Campo requerido").email("Formato de email inválido."), // Valida que sea un email
     password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres."),
+    tel: z.string().min(1, "Campo requerido."),
+    birthday: z.string().min(1, "Campo requerido."),
 });
 
 export class UserModel {
