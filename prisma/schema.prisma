@@ -20,7 +20,7 @@ model User {
   email      String   @unique
   password   String
   tel        String 
-  age        Int
+  birthday        String
   typeUser   TypeUser @relation(fields: [typeUserId], references: [id])
   typeUserId Int      @default(1)
   active     Boolean  @default(false)
