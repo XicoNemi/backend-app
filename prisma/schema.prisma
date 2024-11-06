@@ -15,12 +15,12 @@ datasource db {
 
 model User {
   id         Int      @id @default(autoincrement())
-  name       String  
+  name       String
   lastname   String
   email      String   @unique
   password   String
-  tel        String 
-  birthday        String
+  tel        String
+  birthday   String
   typeUser   TypeUser @relation(fields: [typeUserId], references: [id])
   typeUserId Int      @default(1)
   active     Boolean  @default(false)
