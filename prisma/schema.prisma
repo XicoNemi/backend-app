@@ -19,6 +19,8 @@ model User {
   lastname   String
   email      String   @unique
   password   String
+  tel        String 
+  age        Int
   typeUser   TypeUser @relation(fields: [typeUserId], references: [id])
   typeUserId Int      @default(1)
   active     Boolean  @default(false)
