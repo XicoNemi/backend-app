@@ -13,6 +13,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//* ENUMS
+
+enum ItineraryType {
+  CULTURAL
+  GASTRONOMICO
+  ADVENTURA
+  RELAX
+  FAMILIAR
+}
+
+enum EstablishmentType {
+  RESTAURANTE
+  HOTEL
+  SPA
+  CENTRO_COMERCIAL
+  MUSEO
+  BAR_CLUB
+  GALERIA_ARTE
+  CINE
+  PARQUE_TEMATICO
+  PLAYA_RESORT
+}
+
 //* USUARIO
 model User {
   id               Int                @id @default(autoincrement())
@@ -84,6 +107,7 @@ model Establishment {
   promotion                 Promotion                   @relation(fields: [promotionId], references: [id])
   promotionId               Int
   ItineraryHasEstablishment ItineraryHasEstablishment[]
+  type                      EstablishmentType
 }
 
 //* UBICACION
@@ -109,7 +133,7 @@ model Itinerary {
   id                        Int                         @id @default(autoincrement())
   name                      String
   description               String
-  // type enum
+  type                      ItineraryType
   UserHasRoute              UserHasRoute[]
   UserHasItinerary          UserHasItinerary[]
   ItineraryHasRoute         ItineraryHasRoute[]
@@ -121,7 +145,6 @@ model Travel {
   id       Int    @id @default(autoincrement())
   distance String
   time     String
-  // type enum
   User     User[]
 }
 
