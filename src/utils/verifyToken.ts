@@ -12,6 +12,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction): vo
 
   if (!token) {
     res.status(401).json({ message: 'No token provided' });
+    return;
   }
 
   try {
@@ -19,9 +20,10 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction): vo
       token as string,
       process.env.JWT_SECRET as string
     ) as Payload;
-    req.userId = payload.userId;
-    next();
+    // req.userId = payload.userId; // para despues
+    return next();
   } catch (error) {
     res.status(401).json({ message: 'Invalid token' });
+    return;
   }
 };
