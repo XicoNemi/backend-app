@@ -17,7 +17,7 @@ export class Server {
 
   routes() {
     this.app.get('/', (req, res) => {
-      res.send('API Xiconemi');
+      res.send('XicoNemi');
     });
     this.app.use('/api/users', userRoutes);
     this.app.use('/api/auth', authRoutes);
