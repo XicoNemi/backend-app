@@ -33,7 +33,12 @@ enum EstablishmentType {
   GALERIA_ARTE
   CINE
   PARQUE_TEMATICO
-  PLAYA_RESORT
+  RESORT
+}
+
+enum TypeUser {
+  COMMON
+  ADMIN
 }
 
 //* USUARIO
@@ -44,24 +49,14 @@ model User {
   email            String             @unique
   password         String
   tel              String
-  birthday         String
-  typeUser         TypeUser           @relation(fields: [typeUserId], references: [id])
-  typeUserId       Int                @default(1)
-  travel           Travel             @relation(fields: [travelId], references: [id])
-  travelId         Int
+  birthday         DateTime
+  type             TypeUser           @default(COMMON)
+  travel           Travel?            @relation(fields: [travelId], references: [id])
+  travelId         Int?
   active           Boolean            @default(false)
   token            String?
   UserHasRoute     UserHasRoute[]
   UserHasItinerary UserHasItinerary[]
-}
-
-//* TIPO DE USUARIO
-model TypeUser {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  User      User[]
 }
 
 //* EVENTO
@@ -81,9 +76,9 @@ model pointOfInterest {
   description String
   image       String
   location    Location @relation(fields: [locationId], references: [id])
-  event       Event    @relation(fields: [eventId], references: [id])
+  event       Event?   @relation(fields: [eventId], references: [id])
   locationId  Int
-  eventId     Int
+  eventId     Int?
 }
 
 //* PROMOCION
@@ -94,18 +89,18 @@ model Promotion {
   Establishment Establishment[]
 }
 
-//* ESTABLECIMIENTP
+//* ESTABLECIMIENTO
 model Establishment {
   id                        Int                         @id @default(autoincrement())
   name                      String
   description               String
   Schedule                  DateTime
-  event                     Event                       @relation(fields: [eventId], references: [id])
-  eventId                   Int
+  event                     Event?                      @relation(fields: [eventId], references: [id])
+  eventId                   Int?
   location                  Location                    @relation(fields: [locationId], references: [id])
   locationId                Int
-  promotion                 Promotion                   @relation(fields: [promotionId], references: [id])
-  promotionId               Int
+  promotion                 Promotion?                  @relation(fields: [promotionId], references: [id])
+  promotionId               Int?
   ItineraryHasEstablishment ItineraryHasEstablishment[]
   type                      EstablishmentType
 }
@@ -120,7 +115,7 @@ model Location {
   pointOfInterest pointOfInterest[]
 }
 
-//* RUTA
+//! RUTA
 model Route {
   id                Int                 @id @default(autoincrement())
   data              Json
@@ -143,6 +138,7 @@ model Itinerary {
 //* RECORRIDO
 model Travel {
   id       Int    @id @default(autoincrement())
+  name     String
   distance String
   time     String
   User     User[]
@@ -163,26 +159,26 @@ model UserHasRoute {
   id          Int        @id @default(autoincrement())
   user        User       @relation(fields: [userId], references: [id])
   userId      Int
-  route       Route      @relation(fields: [routeId], references: [id])
-  routeId     Int
+  route       Route?     @relation(fields: [routeId], references: [id])
+  routeId     Int?
   Itinerary   Itinerary? @relation(fields: [itineraryId], references: [id])
   itineraryId Int?
 }
 
 //* ITINERARIO TIENE RUTA
 model ItineraryHasRoute {
-  id          Int       @id @default(autoincrement())
-  routeId     Int
-  itineraryId Int
-  Route       Route     @relation(fields: [routeId], references: [id])
-  Itinerary   Itinerary @relation(fields: [itineraryId], references: [id])
+  id          Int        @id @default(autoincrement())
+  routeId     Int?
+  itineraryId Int?
+  Route       Route?     @relation(fields: [routeId], references: [id])
+  Itinerary   Itinerary? @relation(fields: [itineraryId], references: [id])
 }
 
 //* ITINERARIO TIENE ESTABLECIMIENTO
 model ItineraryHasEstablishment {
-  id              Int           @id @default(autoincrement())
-  itineraryId     Int
-  establishmentId Int
-  Itinerary       Itinerary     @relation(fields: [itineraryId], references: [id])
-  Establishment   Establishment @relation(fields: [establishmentId], references: [id])
+  id              Int            @id @default(autoincrement())
+  itineraryId     Int?
+  establishmentId Int?
+  Itinerary       Itinerary?     @relation(fields: [itineraryId], references: [id])
+  Establishment   Establishment? @relation(fields: [establishmentId], references: [id])
 }
