@@ -11,6 +11,8 @@ const transport: Transporter = nodemailer.createTransport({
     }
 })
 
+const url = urlVerification.development
+
 export const newAccount = async (name:string, email: string, token: string) => {
     const message = {
         from: "support@xiconemi.com",
@@ -85,7 +87,7 @@ export const newAccount = async (name:string, email: string, token: string) => {
                             <p>Hola,</p>
                             <p>Gracias por registrarte en XicoNemi, tu aplicación ideal para explorar Xicotepec.</p>
                             <p>Para completar tu registro, verifica tu correo electrónico haciendo clic en el siguiente botón:</p>
-                            <a href="${urlVerification.local}${token}" class="cta-button">Verificar Correo</a>
+                            <a href="${url}${token}" class="cta-button">Verificar Correo</a>
                             <p>Si no creaste una cuenta con nosotros, ignora este mensaje.</p>
                         </div>
                         <div class="footer">

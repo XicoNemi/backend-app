@@ -3,6 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 // Routes
 import userRoutes from './routes/user.routes';
+import authRoutes from './routes/auth.routes';
 
 export class Server {
   private app: Express;
@@ -16,9 +17,10 @@ export class Server {
 
   routes() {
     this.app.get('/', (req, res) => {
-      res.send('API Xiconemi');
+      res.send('XicoNemi API TEST8 =====');
     });
     this.app.use('/api/users', userRoutes);
+    this.app.use('/api/auth', authRoutes);
     return this.app;
   }
 
