@@ -4,11 +4,33 @@ import { OAuth2Client } from 'google-auth-library';
 import { UserModel } from '../models/user.model';
 import { generateToken } from '../services/auth.service';
 import { comparePassword } from '../utils/bcrypt';
+import axios from 'axios';
 
 const userModel = new UserModel();
 
 const client = new OAuth2Client(process.env.CLIENT_ID_ANDROID);
 
+export const facebookAuth = async (req: Request, res: Response): Promise<void> => {
+  const { accessToken } = req.body;
+
+  try {
+    const response = await axios.get(`https://graph.facebook.com/me?access_token=${accessToken}&fields=id,name,email`);
+
+    const { email, name } = response.data;
+
+    if (!email) {
+      res.status(400).json({ error: 'Facebook authentication failed' });
+      return;
+    }
+
+    const token = await generateToken(11);
+    
+    res.json({ token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error with Facebook authentication' });
+  }
+};
 
 export const googleAuth = async (req: Request, res: Response): Promise<void> => {
   const { tokenId } = req.body;
