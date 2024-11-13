@@ -17,7 +17,7 @@ export class Server {
 
   routes() {
     this.app.get('/', (req, res) => {
-      res.send('XicoNemi API TEST7 =====');
+      res.send('XicoNemi API TEST8 =====');
     });
     this.app.use('/api/users', userRoutes);
     this.app.use('/api/auth', authRoutes);
