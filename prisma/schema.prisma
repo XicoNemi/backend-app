@@ -49,7 +49,7 @@ model User {
   email            String             @unique
   password         String
   tel              String
-  birthday         DateTime
+  birthday         Int
   type             TypeUser           @default(COMMON)
   travel           Travel?            @relation(fields: [travelId], references: [id])
   travelId         Int?
