@@ -46,6 +46,7 @@ export class UserModel {
         data.password = await hashPassword(data.password);
         data.token = token;
         newAccount(data.name, data.email, data.token);
+        data.birthday = new Date(data.birthday);    
         const user = await prisma.user.create({ data });
         return {
             id: user.id,
