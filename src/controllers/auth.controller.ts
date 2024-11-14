@@ -59,7 +59,7 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-export const singUp = async (req: Request, res: Response) => {
+export const signUp = async (req: Request, res: Response) => {
     // ? save a new user
     const user = await userModel.createUser(req.body);  
     // ? generate token
