@@ -35,7 +35,7 @@ export class Server {
   middlewares() {
     this.app.use(cors({
       origin: '*',
-      exposedHeaders: ['Content-Type', 'Authorization'],
+      exposedHeaders: ['Content-Type', 'Authorization', 'auth-token'],
     }));
     this.app.use(morgan('dev'));
     this.app.use(express.json());
