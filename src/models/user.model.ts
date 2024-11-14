@@ -27,7 +27,7 @@ export class UserModel {
         try {
             userSchema.parse(data);
         } catch (error) {
-            if (error instanceof ZodError) { //error de validación
+            if (error instanceof ZodError) { //validation of zod
                 return {
                     message: error.errors.map(e => e.message).join(", ")
                 };
