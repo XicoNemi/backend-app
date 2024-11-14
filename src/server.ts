@@ -34,9 +34,14 @@ export class Server {
 
   middlewares() {
     this.app.use(cors({
-      origin: '*',
+      origin: '*', // Acepta cualquier origen temporalmente
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'auth-token'],
       exposedHeaders: ['Content-Type', 'Authorization', 'auth-token'],
+      credentials: true // Si necesitas incluir cookies o credenciales
     }));
+    
+    this.app.options('*', cors());
     this.app.use(morgan('dev'));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
