@@ -4,7 +4,6 @@ import {
   deleteUser,
   getAllUsers,
   getUser,
-  newTypeUser,
   updateUser,
 } from '../controllers/user.controller';
 
@@ -16,7 +15,6 @@ router.get('/', verifyToken, getAllUsers);
 router.get('/:id', verifyToken, getUser);
 router.put('/:id', verifyToken, updateUser);
 router.delete('/delete/:id', verifyToken, deleteUser);
-router.post('/type', verifyToken, newTypeUser);
 
 router.get('/verify-email/:token', activeAccount);
 

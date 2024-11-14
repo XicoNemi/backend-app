@@ -53,11 +53,6 @@ export class UserModel {
         };
     }
 
-    async newTypeUser(data: TypeUser) {
-        const typeUser = await prisma.typeUser.create({ data });
-        return typeUser;
-    }
-
     async updateUser(id: number, data: User) {
         try {
             userSchema.parse(data);
