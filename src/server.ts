@@ -17,7 +17,7 @@ export class Server {
 
   routes() {
     this.app.get('/', (req, res) => {
-      res.send('XicoNemi API TEST8 =====');
+      res.send('TEST GITHUB WEBHOOK');
     });
     this.app.use('/api/users', userRoutes);
     this.app.use('/api/auth', authRoutes);
