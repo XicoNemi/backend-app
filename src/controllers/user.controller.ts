@@ -30,11 +30,6 @@ const deleteUser = async (req: Request, res: Response) => {
     res.json(user).status(200);
 }
 
-const newTypeUser = async (req: Request, res: Response) => {
-    const typeUser = await userModel.newTypeUser(req.body);
-    res.json(typeUser).status(201);
-}
-
 const activeAccount = async (req: Request, res: Response) => {
     const token = req.params.token;
     const user = await userModel.activeAccount(token);
@@ -44,8 +39,7 @@ const activeAccount = async (req: Request, res: Response) => {
 
 export { 
     getAllUsers,
-    createUser, 
-    newTypeUser, 
+    createUser,  
     updateUser, 
     deleteUser, 
     getUser, 
