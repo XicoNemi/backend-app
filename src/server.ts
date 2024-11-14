@@ -6,6 +6,8 @@ import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
 import promotionRoutes from './routes/promotion.route';
 import establishmentRoutes from './routes/establishment.route';
+import fs from 'node:fs'
+import path from 'node:path'
 
 export class Server {
   private app: Express;
@@ -23,7 +25,7 @@ export class Server {
     });
     this.app.use('/api/users', userRoutes);
     this.app.use('/api/auth', authRoutes);
-    this.app.use('/api/promotions',promotionRoutes)
+    this.app.use('/api/promotions', promotionRoutes)
     this.app.use('/api/estabs', establishmentRoutes)
     return this.app;
   }
@@ -42,7 +44,13 @@ export class Server {
     }));
     
     this.app.options('*', cors());
-    this.app.use(morgan('dev'));
+    const logDirectory = path.join(__dirname, 'logs');
+    if (!fs.existsSync(logDirectory)) {
+      fs.mkdirSync(logDirectory);
+    }
+    const logStream = fs.createWriteStream(path.join(logDirectory, 'access.log'), { flags: 'a' });
+    this.app.use(morgan('combined', { stream: logStream }));
+    this.app.use(morgan('dev')); 
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
   }

@@ -11,7 +11,7 @@ async function main() {
 
     const hashedPassword = await bcrypt.hash("12345678", saltRounds)
     console.log('<========== Start seeding =========>');
-
+    await prisma.user.deleteMany()
     const users = await prisma.user.createMany({
         data: [
             {
