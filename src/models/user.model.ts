@@ -1,6 +1,6 @@
 import { PrismaClient, TypeUser, User } from '@prisma/client';
 import { hashPassword } from '../utils/bcrypt';
-import { token } from '../utils/token';
+import { generateToken } from '../utils/token';
 import { z, ZodError } from 'zod'; // Asegúrate de importar ZodError
 import { newAccount } from '../services/emailService';
 
@@ -50,7 +50,7 @@ export class UserModel {
     }
 
     data.password = await hashPassword(data.password);
-    data.token = token;
+    data.token = generateToken();
     newAccount(data.name, data.email, data.token);
     data.birthday = data.birthday;
     const user = await prisma.user.create({ data });
