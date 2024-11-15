@@ -4,9 +4,7 @@ import bcrypt from 'bcrypt';
 const saltRounds = 10;
 
 const prisma = new PrismaClient();
-const inputDate = "02/01/2024"; // Ejemplo de fecha dada
-const [day, month, year] = inputDate.split("/").map(Number);
-const parsedDate = new Date(year, month - 1, day); // Crear objeto Date
+
 async function main() {
 
     const hashedPassword = await bcrypt.hash("12345678", saltRounds)
@@ -20,26 +18,26 @@ async function main() {
                 email: "jazzielrodriguezlopez@gmail.com",
                 password: hashedPassword,
                 tel: "1234567890",
-                birthday: parsedDate,
+                birthday: 946684800,
                 type: 'COMMON',
-                active:true
+                active: true
             }, {
                 name: "Luis Octavio",
                 lastname: "Lopez Martinez",
                 email: "octaviodevtech@gmail.com",
                 password: hashedPassword,
                 tel: "1234567890",
-                birthday: parsedDate,
-                active:true
+                birthday: 946684800,
+                active: true
             }, {
                 name: "XicoNemi",
                 lastname: "Organización",
                 email: "xiconemi@gmail.com",
                 password: hashedPassword,
                 tel: "1234567890",
-                birthday: parsedDate,
-                active:true,
-                type:'ADMIN'
+                birthday: 946684800,
+                active: true,
+                type: 'ADMIN'
             }
         ]
     })
@@ -48,18 +46,18 @@ async function main() {
             data: [
                 {
                     name: "Carrera al monumental virgen de guadalupe",
-                    startDate: new Date(),
-                    endDate: new Date(),
+                    startDate: 946684800,
+                    endDate: 946684800,
                 },
                 {
                     name: "Caminata por senderos de la boca del diablo ",
-                    startDate: new Date(),
-                    endDate: new Date(),
+                    startDate: 946684800,
+                    endDate: 946684800,
                 },
                 {
                     name: "Tour por el centro de Xicotepec",
-                    startDate: new Date(),
-                    endDate: new Date(),
+                    startDate: 946684800,
+                    endDate: 946684800,
                 }
             ]
         }
@@ -117,14 +115,16 @@ async function main() {
                 description: "negocio familiar donde hay peleas los jueves",
                 Schedule: new Date(),
                 locationId: 1,
-                type: 'BAR_CLUB'
+                type: 'BAR_CLUB',
+                image: "https://www.pexels.com/es-es/foto/jardin-bailando-piedras-celebracion-17510249/"
             },
             {
                 name: "Alitas",
                 description: "Alitas de sabores",
                 Schedule: new Date(),
                 locationId: 2,
-                type: 'RESTAURANTE'
+                type: 'RESTAURANTE',
+                image: "https://www.pexels.com/es-es/foto/jardin-bailando-piedras-celebracion-17510249/"
             }
         ]
     })

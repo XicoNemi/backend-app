@@ -63,8 +63,8 @@ model User {
 model Event {
   id              Int               @id @default(autoincrement())
   name            String
-  startDate       DateTime
-  endDate         DateTime
+  startDate       Int
+  endDate         Int
   Establishment   Establishment[]
   pointOfInterest pointOfInterest[]
 }
@@ -95,6 +95,7 @@ model Establishment {
   name                      String
   description               String
   Schedule                  DateTime
+  image                     String
   event                     Event?                      @relation(fields: [eventId], references: [id])
   eventId                   Int?
   location                  Location                    @relation(fields: [locationId], references: [id])
