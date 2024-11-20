@@ -5,8 +5,10 @@ const prisma = new PrismaClient();
 const establishmentSchema = z.object({
     name: z.string().min(1, "Campo requerido."),
     description: z.string().min(1, "Campo requerido."),
-    schedule: z.date().min(new Date(), "La fecha no puede ser menor a la actual."),
-    locationId: z.number().int().positive("Campo requerido."),
+    schedule: z.number().min(1, "Campo requerido"),
+    image: z.string().min(1, "Campo requerido"),
+    type: z.string().min(1, "Campo requerido"),
+    locationId: z.number().min(1, "Campo requerido")
 })
 
 export class EstablishmentModel {
@@ -36,6 +38,10 @@ export class EstablishmentModel {
                 };
             }
             return { message: "Error desconocido" };
+        }
+        const isExist = await prisma.location.findUnique({ where: { id:data.locationId } });
+        if (!isExist) {
+            return { message: "La ubicación no existe." };
         }
 
         const estab = await prisma.establishment.create({ data });
