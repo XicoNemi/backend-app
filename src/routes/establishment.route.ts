@@ -4,9 +4,9 @@ import { getAllEstabs, getEstabById, createEstab, updateEstab, deleteEstab } fro
 
 const router = Router()
 
-router.get('/', getAllEstabs)
-router.get('/:id',  getEstabById)
-router.post('/:id', verifyToken, createEstab)
+router.get('/', verifyToken, getAllEstabs)
+router.get('/:id', verifyToken, getEstabById)
+router.post('/', verifyToken, createEstab)
 router.put('/:id', verifyToken, updateEstab)
 router.delete('/delete/:id', verifyToken, deleteEstab)
 
