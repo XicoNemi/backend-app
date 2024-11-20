@@ -89,17 +89,19 @@ export class UserModel {
     };
   }
 
-  async deleteUser(id: number) {
-    const userDeleted = await prisma.user.delete({
-      where: { id },
-    });
-    if (!userDeleted) {
-      return {
-        message: 'Usuario no encontrado.',
-      };
+    async deleteUser(id: number) {
+        const isExist = await prisma.user.findUnique({ where: { id } });
+        if (!isExist) {
+            return {
+                message: "Usuario no encontrado."
+            };
+        }
+        const userDeleted = await prisma.user.delete({
+            where: { id }
+        })
+
+        return userDeleted;
     }
-    return userDeleted;
-  }
 
   async getUser(id: number) {
     const user = await prisma.user.findUnique({
