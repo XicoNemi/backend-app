@@ -36,6 +36,11 @@ enum EstablishmentType {
   RESORT
 }
 
+enum StatusEvent {
+  ACTIVO
+  INACTIVO
+}
+
 enum TypeUser {
   COMMON
   ADMIN
@@ -51,7 +56,7 @@ model User {
   tel              String
   birthday         Int
   type             TypeUser           @default(COMMON)
-  travel           Travel?            @relation(fields: [travelId], references: [id])
+  travel           Travel?            @relation(fields: [travelId], references: [id], onDelete: Cascade)
   travelId         Int?
   active           Boolean            @default(false)
   token            String?
@@ -65,6 +70,7 @@ model Event {
   name            String
   startDate       Int
   endDate         Int
+  status          StatusEvent
   Establishment   Establishment[]
   pointOfInterest pointOfInterest[]
 }
@@ -75,8 +81,8 @@ model pointOfInterest {
   name        String
   description String
   image       String
-  location    Location @relation(fields: [locationId], references: [id])
-  event       Event?   @relation(fields: [eventId], references: [id])
+  location    Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  event       Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   locationId  Int
   eventId     Int?
 }
@@ -94,13 +100,13 @@ model Establishment {
   id                        Int                         @id @default(autoincrement())
   name                      String
   description               String
-  Schedule                  DateTime
+  schedule                  Int
   image                     String
-  event                     Event?                      @relation(fields: [eventId], references: [id])
+  event                     Event?                      @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId                   Int?
-  location                  Location                    @relation(fields: [locationId], references: [id])
+  location                  Location                    @relation(fields: [locationId], references: [id], onDelete: Cascade)
   locationId                Int
-  promotion                 Promotion?                  @relation(fields: [promotionId], references: [id])
+  promotion                 Promotion?                  @relation(fields: [promotionId], references: [id], onDelete: Cascade)
   promotionId               Int?
   ItineraryHasEstablishment ItineraryHasEstablishment[]
   type                      EstablishmentType
@@ -140,8 +146,8 @@ model Itinerary {
 model Travel {
   id       Int    @id @default(autoincrement())
   name     String
-  distance String
-  time     String
+  distance Int
+  time     Int
   User     User[]
 }
 
@@ -149,20 +155,20 @@ model Travel {
 //* USUARIO TIENE ITINERARIO
 model UserHasItinerary {
   id          Int       @id @default(autoincrement())
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
-  itinerary   Itinerary @relation(fields: [itineraryId], references: [id])
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
   itineraryId Int
 }
 
 //* USUARIO TIENE RUTA
 model UserHasRoute {
   id          Int        @id @default(autoincrement())
-  user        User       @relation(fields: [userId], references: [id])
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
-  route       Route?     @relation(fields: [routeId], references: [id])
+  route       Route?     @relation(fields: [routeId], references: [id], onDelete: Cascade)
   routeId     Int?
-  Itinerary   Itinerary? @relation(fields: [itineraryId], references: [id])
+  Itinerary   Itinerary? @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
   itineraryId Int?
 }
 
@@ -171,8 +177,8 @@ model ItineraryHasRoute {
   id          Int        @id @default(autoincrement())
   routeId     Int?
   itineraryId Int?
-  Route       Route?     @relation(fields: [routeId], references: [id])
-  Itinerary   Itinerary? @relation(fields: [itineraryId], references: [id])
+  Route       Route?     @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  Itinerary   Itinerary? @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
 }
 
 //* ITINERARIO TIENE ESTABLECIMIENTO
@@ -180,6 +186,6 @@ model ItineraryHasEstablishment {
   id              Int            @id @default(autoincrement())
   itineraryId     Int?
   establishmentId Int?
-  Itinerary       Itinerary?     @relation(fields: [itineraryId], references: [id])
-  Establishment   Establishment? @relation(fields: [establishmentId], references: [id])
+  Itinerary       Itinerary?     @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  Establishment   Establishment? @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
 }
