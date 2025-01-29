@@ -21,7 +21,7 @@ export class Server {
 
   routes() {
     this.app.get('/', (req, res) => {
-      res.send('TEST GITHUB WEBHOOK');
+      res.send(`${process.env.DATABASE_URL}`);
     });
     this.app.use('/api/users', userRoutes);
     this.app.use('/api/auth', authRoutes);
