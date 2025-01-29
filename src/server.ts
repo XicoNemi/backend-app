@@ -21,7 +21,7 @@ export class Server {
 
   routes() {
     this.app.get('/', (req, res) => {
-      res.send(`${process.env.DATABASE_URL}`);
+      res.send('This is the API of the app');
     });
     this.app.use('/api/users', userRoutes);
     this.app.use('/api/auth', authRoutes);
