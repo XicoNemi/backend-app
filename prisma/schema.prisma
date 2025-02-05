@@ -49,6 +49,7 @@ enum TypeUser {
 //* USUARIO
 model User {
   id               Int                @id @default(autoincrement())
+  idFacebook       String?
   name             String
   lastname         String
   email            String             @unique
@@ -98,6 +99,7 @@ model Promotion {
 //* ESTABLECIMIENTO
 model Establishment {
   id                        Int                         @id @default(autoincrement())
+  idFacebook                String?
   name                      String
   description               String
   schedule                  Int
