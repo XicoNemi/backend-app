@@ -1,4 +1,4 @@
-  // auth.controller.ts
+// auth.controller.ts
 import { Request, Response } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import { UserModel } from '../models/user.model';
@@ -14,7 +14,9 @@ export const facebookAuth = async (req: Request, res: Response): Promise<void> =
   const { accessToken } = req.body;
 
   try {
-    const response = await axios.get(`https://graph.facebook.com/me?access_token=${accessToken}&fields=id,name,email`);
+    const response = await axios.get(
+      `https://graph.facebook.com/me?access_token=${accessToken}&fields=id,name,email`
+    );
 
     const { email, name } = response.data;
 
@@ -24,7 +26,7 @@ export const facebookAuth = async (req: Request, res: Response): Promise<void> =
     }
 
     const token = await generateToken(11);
-    
+
     res.json({ token });
   } catch (error) {
     console.error(error);
@@ -48,11 +50,9 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-
     const token = await generateToken(11);
-    
-    res.json({ token });
 
+    res.json({ token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error with Google authentication' });
@@ -60,31 +60,32 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
 };
 
 export const signUp = async (req: Request, res: Response) => {
-    // ? save a new user
-    const user = await userModel.createUser(req.body);  
-    // ? generate token
-    const token: string = generateToken(user.id as number);
+  // ? save a new user
+  const user = await userModel.createUser(req.body);
+  // ? generate token
+  const token: string = generateToken(user.id as number);
 
-    res.header("token", token).json(user).status(201);
+  res.header('token', token).json(user).status(201);
 };
 
 export const signIn = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-    
-    // ? verify user
-    const user = await userModel.getUserByEmail(email);
-    if (!user) {
-      res.status(404).json({ message: "User not found" });  // ! user not found
-      return
-    }
-  
-    // ? verify password
-    const isPasswordValid: boolean = await comparePassword(password, user.password);
-    if (!isPasswordValid) {
-      res.status(400).json({ message: "Wrong password or email" });  // ! wrong password
-    }
-  
-    const token = await generateToken(user.id);  
-    user.password = "";
-    res.header("auth-token", token).json(user).status(200);
-  };
+  const { email, password } = req.body;
+
+  // ? verify user
+  const user = await userModel.getUserByEmail(email);
+  if (!user) {
+    res.status(404).json({ message: 'User not found' }); // ! user not found
+    return;
+  }
+
+  // ? verify password
+  const isPasswordValid: boolean = await comparePassword(password, user.password);
+  if (!isPasswordValid) {
+    res.status(400).json({ message: 'Wrong password or email' }); // ! wrong password
+    return;
+  }
+
+  const token = await generateToken(user.id);
+  user.password = '';
+  res.status(200).header('auth-token', token).json(user);
+};
