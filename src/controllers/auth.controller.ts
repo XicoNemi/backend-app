@@ -88,34 +88,39 @@ export const signUp = async (req: Request, res: Response) => {
   // ? generate token
   const token: string = generateToken(user.id as number);
 
-  res.header('token', token).json(user).status(201);
+  res.status(201).json({ user, token });
 };
 
 export const signIn = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
-    // ? verify user
     const user = await userModel.getUserByEmail(email);
     if (!user) {
-      res.status(404).json({ message: 'User not found' }); // ! user not found
+      res.status(404).json({ message: 'User not found' });
       return;
     }
 
-    // ? verify password
     const isPasswordValid: boolean = await comparePassword(password, user.password);
     if (!isPasswordValid) {
-      res.status(400).json({ message: 'Wrong password or email' }); // ! wrong password
+      res.status(400).json({ message: 'Wrong password or email' });
       return;
     }
 
-    const token = await generateToken(user.id);
+    const token = await generateToken(user);
     user.password = '';
-    res.status(200).header('auth-token', token).json(user);
+
+    res.status(200).json({ user, token });
   } catch (error) {
     console.error(error);
     if (!res.headersSent) {
       res.status(500).json({ message: 'Internal server error' });
     }
   }
+};
+
+export const deleteUserByEmail = async (req: Request, res: Response) => {
+  const email = req.params.email;
+  const user = await userModel.deleteByEmail(email);
+  res.json(user).status(200);
 };
