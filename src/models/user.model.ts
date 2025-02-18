@@ -89,19 +89,33 @@ export class UserModel {
     };
   }
 
-    async deleteUser(id: number) {
-        const isExist = await prisma.user.findUnique({ where: { id } });
-        if (!isExist) {
-            return {
-                message: "Usuario no encontrado."
-            };
-        }
-        const userDeleted = await prisma.user.delete({
-            where: { id }
-        })
-
-        return userDeleted;
+  async deleteUser(id: number) {
+    const isExist = await prisma.user.findUnique({ where: { id } });
+    if (!isExist) {
+      return {
+        message: 'Usuario no encontrado.',
+      };
     }
+    const userDeleted = await prisma.user.delete({
+      where: { id },
+    });
+
+    return userDeleted;
+  }
+
+  async deleteByEmail(email: string) {
+    const isExist = await prisma.user.findUnique({ where: { email } });
+    if (!isExist) {
+      return {
+        message: 'Usuario no encontrado.',
+      };
+    }
+    const userDeleted = await prisma.user.delete({
+      where: { email },
+    });
+
+    return userDeleted;
+  }
 
   async getUser(id: number) {
     const user = await prisma.user.findUnique({

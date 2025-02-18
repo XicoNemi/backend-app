@@ -3,13 +3,19 @@ import jwt from 'jsonwebtoken';
 
 interface Payload {
   userId: number;
+  email: string;
+  type: string;
   iat: number;
   exp: number;
 }
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction): void => {
-  const token = req.header('auth-token');
+  const authHeader = req.header('Authorization');
+  const token =
+    authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
+    console.log(token);
+    
   if (!token) {
     res.status(401).json({ message: 'No token provided' });
     return;
