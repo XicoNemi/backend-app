@@ -48,16 +48,19 @@ async function main() {
                     name: "Carrera al monumental virgen de guadalupe",
                     startDate: 946684800,
                     endDate: 946684800,
+                                        status: 'ACTIVO'
                 },
                 {
                     name: "Caminata por senderos de la boca del diablo ",
                     startDate: 946684800,
                     endDate: 946684800,
+                                        status: 'ACTIVO'
                 },
                 {
                     name: "Tour por el centro de Xicotepec",
                     startDate: 946684800,
                     endDate: 946684800,
+                                        status: 'ACTIVO'
                 }
             ]
         }
@@ -113,7 +116,7 @@ async function main() {
             {
                 name: "Mr. Cheve",
                 description: "negocio familiar donde hay peleas los jueves",
-                Schedule: new Date(),
+                schedule: 11111,
                 locationId: 1,
                 type: 'BAR_CLUB',
                 image: "https://www.pexels.com/es-es/foto/jardin-bailando-piedras-celebracion-17510249/"
@@ -121,7 +124,7 @@ async function main() {
             {
                 name: "Alitas",
                 description: "Alitas de sabores",
-                Schedule: new Date(),
+                schedule: 11111,
                 locationId: 2,
                 type: 'RESTAURANTE',
                 image: "https://www.pexels.com/es-es/foto/jardin-bailando-piedras-celebracion-17510249/"

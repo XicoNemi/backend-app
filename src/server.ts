@@ -1,14 +1,19 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import fs from 'node:fs'
+import path from 'node:path'
+
 // Routes
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
 import promotionRoutes from './routes/promotion.route';
 import establishmentRoutes from './routes/establishment.route';
+import locationRoutes from './routes/location.route';
+import eventRoutes from './routes/event.routes';
+import itineraryRoutes from './routes/itinerary.routes';
+import pointsRoutes from './routes/pointOfInterest.routes';
 import { connectToDatabase } from './config/database';
-import fs from 'fs';
-import path from 'path';
 
 export class Server {
   private app: express.Express;
@@ -26,6 +31,12 @@ export class Server {
     });
     this.app.use('/api/users', userRoutes);
     this.app.use('/api/auth', authRoutes);
+    this.app.use('/api/promotions', promotionRoutes)
+    this.app.use('/api/estabs', establishmentRoutes)
+    this.app.use('/api/locations', locationRoutes)
+    this.app.use('/api/events', eventRoutes)
+    this.app.use('/api/itineraries', itineraryRoutes)
+    this.app.use('/api/points', pointsRoutes)
     this.app.use('/api/promotions', promotionRoutes);
     this.app.use('/api/estabs', establishmentRoutes);
     return this.app;

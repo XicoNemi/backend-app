@@ -5,8 +5,10 @@ import { UserModel } from '../models/user.model';
 import { generateToken } from '../services/auth.service';
 import { comparePassword } from '../utils/bcrypt';
 import axios from 'axios';
+import { PrismaClient } from '@prisma/client';
 
 const userModel = new UserModel();
+const prisma = new PrismaClient();
 
 const client = new OAuth2Client(process.env.CLIENT_ID_ANDROID);
 
@@ -18,15 +20,36 @@ export const facebookAuth = async (req: Request, res: Response): Promise<void> =
       `https://graph.facebook.com/me?access_token=${accessToken}&fields=id,name,email`
     );
 
-    const { email, name } = response.data;
+    const { email, name, id } = response.data;
 
     if (!email) {
       res.status(400).json({ error: 'Facebook authentication failed' });
       return;
     }
+    let user = await userModel.getUserByEmail(email);
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          idFacebook: id,
+          name,
+          lastname: '',
+          email,
+          password: '',
+          tel: '',
+          birthday: 0,
+          type: 'COMMON',
+          active: true,
+          token: null,
+        },
+      });
+    } else {
+      await prisma.user.update({
+        where: { email },
+        data: { active: true },
+      });
+    }
 
-    const token = await generateToken(11);
-
+    const token = await generateToken(user.id as number);
     res.json({ token });
   } catch (error) {
     console.error(error);
