@@ -1,13 +1,14 @@
 import rateLimit from 'express-rate-limit';
 import Redis from 'ioredis';
 import RedisStore from 'rate-limit-redis';
+import { loggerXiconemi } from '../utils/colorLogs';
 
 const redisUrl = process.env.REDIS_URL;
 const redisPort = process.env.REDIS_PORT;
 const redisPassword = process.env.REDIS_PASS;
 
 if (!redisUrl || !redisPort) {
-  console.error('\x1b[31m%s\x1b[0m', 'REDIS_URL and REDIS_PORT must be defined');
+  loggerXiconemi('red', 'Missing Redis configuration');
   process.exit(1);
 }
 
@@ -22,9 +23,7 @@ try {
   });
 
   redisClient.on('connect', () => {
-    console.log('\x1b[91m%s\x1b[0m', '=====================================');
-    console.log('\x1b[91m%s\x1b[0m', 'Connected to Redis successfully');
-    console.log('\x1b[91m%s\x1b[0m', '=====================================');
+    loggerXiconemi('red', 'Redis client connected', 'reddis');
   });
 
   redisClient.on('error', (err) => {
