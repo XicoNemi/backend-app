@@ -1,4 +1,4 @@
-import { PrismaClient, Business, EstablishmentType } from "@prisma/client";
+import { PrismaClient, Business, CategoryType } from "@prisma/client";
 import { z, ZodError } from "zod";
 
 const prisma = new PrismaClient();
@@ -13,7 +13,7 @@ const businessSchema = z.object({
 });
 
 export class BusinessModel {
-    async getAllBusinesses(filter?: EstablishmentType) {
+    async getAllBusinesses(filter?:  CategoryType) {
         if (filter) {
             return await prisma.business.findMany({
                 where: {

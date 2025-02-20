@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { BusinessModel } from "../models/business.model";
-import { EstablishmentType } from "@prisma/client";
+import { CategoryType } from "@prisma/client";
 import { z } from "zod";
 
 const businessModel = new BusinessModel();
@@ -24,7 +24,7 @@ export const getAllBusinesses = async (req: Request, res: Response): Promise<voi
             categoryEnum.parse(filter); // Validar con Zod
         }
 
-        const businesses = await businessModel.getAllBusinesses(filter as EstablishmentType);
+        const businesses = await businessModel.getAllBusinesses(filter as CategoryType);
         res.status(200).json(businesses);
     } catch (error) {
         if (error instanceof z.ZodError) {
