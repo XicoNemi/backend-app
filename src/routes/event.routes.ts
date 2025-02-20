@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getAllEvents, getEventById, createEvent, updateEvent, deleteEvent } from "../controllers/event.controller";
-import { verifyToken } from "../utils/verifyToken";
+import { verifyToken } from "../middleware/verifyToken";
 
 const router = Router()
 

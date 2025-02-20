@@ -6,7 +6,7 @@ import {
     updateItineraryHasRoute, 
     deleteItineraryHasRoute 
 } from "../controllers/itineraryHasRoute.controller";
-import { verifyToken } from "../utils/verifyToken";
+import { verifyToken } from "../middleware/verifyToken";
 
 const router = Router();
 

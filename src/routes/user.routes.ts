@@ -5,9 +5,10 @@ import {
   getAllUsers,
   getUser,
   updateUser,
+  partialUpdateUser,
 } from '../controllers/user.controller';
 
-import { verifyToken } from '../utils/verifyToken';
+import { verifyToken } from '../middleware/verifyToken';
 
 const router = Router();
 
@@ -36,6 +37,7 @@ const router = Router();
 router.get('/', verifyToken, getAllUsers);
 router.get('/:id', verifyToken, getUser);
 router.put('/:id', verifyToken, updateUser);
+router.patch('/:id', verifyToken, partialUpdateUser);
 router.delete('/delete/:id', verifyToken, deleteUser);
 
 router.get('/verify-email/:token', activeAccount);

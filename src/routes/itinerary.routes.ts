@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getAllItineraries, getItineraryById, createItinerary, updateItinerary, deleteItinerary } from "../controllers/itinerary.controller";
-import { verifyToken } from "../utils/verifyToken";
+import { verifyToken } from "../middleware/verifyToken";
 
 const router = Router()
 

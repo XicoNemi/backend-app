@@ -6,7 +6,7 @@ import {
     getPromotionById,
     updatePromotion
 } from "../controllers/promotion.controller";
-import { verifyToken } from "../utils/verifyToken";
+import { verifyToken } from "../middleware/verifyToken";
 
 
 const router = Router();
