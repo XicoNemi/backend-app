@@ -1,6 +1,6 @@
 import { createBusiness, deleteBusiness, getAllBusinesses, getBusiness, updateBusiness } from "../controllers/business.controller";
 import { Router } from "express";
-import { verifyToken } from "../utils/verifyToken";
+import { verifyToken } from "../middleware/verifyToken";
 
 const router = Router();
 

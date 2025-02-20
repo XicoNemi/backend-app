@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { ContentController } from "../controllers/content.controller";
-import { verifyToken } from "../utils/verifyToken";
+import { verifyToken } from "../middleware/verifyToken";
 
 const router = Router();
 const contentController = new ContentController();
