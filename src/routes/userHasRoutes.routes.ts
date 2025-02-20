@@ -6,7 +6,7 @@ import {
     updateUserHasRoutes,
     deleteUserHasRoutes
 } from "../controllers/userHasRoute.controller";
-import { verifyToken } from "../utils/verifyToken";
+import { verifyToken } from "../middleware/verifyToken";
 
 const router = Router();
 

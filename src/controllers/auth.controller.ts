@@ -1,11 +1,12 @@
 // auth.controller.ts
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import { UserModel } from '../models/user.model';
 import { generateToken } from '../services/auth.service';
 import { comparePassword } from '../utils/bcrypt';
-import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
+import { AppError } from '../utils/errorApp';
+import axios from 'axios';
 
 const userModel = new UserModel();
 const prisma = new PrismaClient();
@@ -82,27 +83,31 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-export const signUp = async (req: Request, res: Response) => {
-  // ? save a new user
-  const user = await userModel.createUser(req.body);
-
-  res.status(201).json(user);
+export const signUp = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await userModel.createUser(req.body);
+    res.status(201).json(user);
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const signIn = async (req: Request, res: Response): Promise<void> => {
+export const signIn = async (
+  req: Request,
+  res: Response,
+  next: Function
+): Promise<void> => {
   try {
     const { email, password } = req.body;
 
     const user = await userModel.getUserByEmail(email);
     if (!user) {
-      res.status(404).json({ message: 'User not found' });
-      return;
+      return next(new AppError('User not found', 404));
     }
 
     const isPasswordValid: boolean = await comparePassword(password, user.password);
     if (!isPasswordValid) {
-      res.status(400).json({ message: 'Wrong password or email' });
-      return;
+      return next(new AppError('Wrong password or email', 400));
     }
 
     const token = await generateToken(user);
@@ -110,10 +115,7 @@ export const signIn = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).json({ user, token });
   } catch (error) {
-    console.error(error);
-    if (!res.headersSent) {
-      res.status(500).json({ message: 'Internal server error' });
-    }
+    next(error);
   }
 };
 

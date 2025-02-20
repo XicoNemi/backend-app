@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createLocation, deleteLocation, getAllLocations, getLocationById, updateLocation } from "../controllers/location.controller";
-import { verifyToken } from "../utils/verifyToken";
+import { verifyToken } from "../middleware/verifyToken";
 
 const router = Router()
 

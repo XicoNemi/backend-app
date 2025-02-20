@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { verifyToken } from "../utils/verifyToken";
 import { getAllEstabs, getEstabById, createEstab, updateEstab, deleteEstab } from "../controllers/establishment.controller";
+import { verifyToken } from "../middleware/verifyToken";
 
 const router = Router()
 
