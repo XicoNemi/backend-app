@@ -14,6 +14,9 @@ import eventRoutes from './routes/event.routes';
 import itineraryRoutes from './routes/itinerary.routes';
 import pointsRoutes from './routes/pointOfInterest.routes';
 import { connectToDatabase } from './config/database';
+import imageRoutes from './routes/image.routes';
+import businessRoutes from './routes/business.routes';
+import contentRoutes from './routes/content.routes';
 
 export class Server {
   private app: express.Express;
@@ -39,6 +42,9 @@ export class Server {
     this.app.use('/api/points', pointsRoutes)
     this.app.use('/api/promotions', promotionRoutes);
     this.app.use('/api/estabs', establishmentRoutes);
+    this.app.use('/api/images', imageRoutes);
+    this.app.use('/api/business', businessRoutes);
+    this.app.use('/api/contents', contentRoutes);
     return this.app;
   }
 

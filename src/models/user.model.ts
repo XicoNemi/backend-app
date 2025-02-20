@@ -1,4 +1,4 @@
-import { PrismaClient, TypeUser, User } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 import { hashPassword } from '../utils/bcrypt';
 import { generateToken } from '../utils/token';
 import { z, ZodError } from 'zod'; // Asegúrate de importar ZodError
@@ -12,6 +12,7 @@ const userSchema = z.object({
   email: z.string().min(1, 'Campo requerido').email('Formato de email inválido.'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres.'),
   tel: z.string().min(1, 'Campo requerido.'),
+  genre: z.string().min(1, 'Campo requerido.'),
   birthday: z
     .number()
     .min(1, 'Campo requerido.')
