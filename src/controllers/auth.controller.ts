@@ -30,7 +30,7 @@ export const facebookAuth = async (req: Request, res: Response): Promise<void> =
     if (!user) {
       user = await prisma.user.create({
         data: {
-          idFacebook: id,
+          // idFacebook: id,
           name,
           lastname: '',
           email,
@@ -85,10 +85,8 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
 export const signUp = async (req: Request, res: Response) => {
   // ? save a new user
   const user = await userModel.createUser(req.body);
-  // ? generate token
-  const token: string = generateToken(user.id as number);
 
-  res.status(201).json({ user, token });
+  res.status(201).json(user);
 };
 
 export const signIn = async (req: Request, res: Response): Promise<void> => {

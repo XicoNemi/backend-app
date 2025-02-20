@@ -1,6 +1,11 @@
 import jwt from 'jsonwebtoken';
 
 export const generateToken = (user: any) => {
+  
+  if (!user) {
+    throw new Error('User is undefined');
+  }
+
   const payload = {
     userId: user.id,
     email: user.email,

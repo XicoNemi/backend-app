@@ -3,6 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import fs from 'node:fs'
 import path from 'node:path'
+import { loggerXiconemi } from './utils/colorLogs';
 
 // Routes
 import userRoutes from './routes/user.routes';
@@ -14,6 +15,7 @@ import eventRoutes from './routes/event.routes';
 import itineraryRoutes from './routes/itinerary.routes';
 import pointsRoutes from './routes/pointOfInterest.routes';
 import { connectToDatabase } from './config/database';
+import { setupSwagger } from './config/swagger';
 import imageRoutes from './routes/image.routes';
 import businessRoutes from './routes/business.routes';
 import contentRoutes from './routes/content.routes';
@@ -26,6 +28,11 @@ export class Server {
     this.configuration();
     this.middlewares();
     this.routes();
+    this.setupSwagger();
+  }
+
+  setupSwagger() {
+    setupSwagger(this.app);
   }
 
   routes() {
@@ -78,10 +85,7 @@ export class Server {
 
   listen() {
     this.app.listen(this.app.get('port'), async () => {
-      console.log('\x1b[32m%s\x1b[0m', '=====================================');
-      console.log('\x1b[32m%s\x1b[0m', ' Server is running');
-      console.log('\x1b[32m%s\x1b[0m', ` Listening on port: ${this.app.get('port')}`);
-      console.log('\x1b[32m%s\x1b[0m', '=====================================');
+      loggerXiconemi('cyan', `Server running on port ${this.app.get('port')}`, 'success');
 
       await connectToDatabase();
     });

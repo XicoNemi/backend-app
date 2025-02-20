@@ -1,17 +1,13 @@
 import { PrismaClient } from '@prisma/client';
-
+import { loggerXiconemi } from '../utils/colorLogs';
 const prisma = new PrismaClient();
 
 export async function connectToDatabase() {
   try {
     await prisma.$connect();
-    console.log('\x1b[34m%s\x1b[0m', '=====================================');
-    console.log('\x1b[34m%s\x1b[0m', ' Connected to MySQL successfully');
-    console.log('\x1b[34m%s\x1b[0m', '=====================================');
+    loggerXiconemi('green', 'Connected to MySQL database', 'mysql');
   } catch (error) {
-    console.log('\x1b[34m%s\x1b[0m', '=====================================');
-    console.error('\x1b[31m%s\x1b[0m', ' Failed to connect to MySQL database', error);
-    console.log('\x1b[34m%s\x1b[0m', '=====================================');
+    loggerXiconemi('red', 'Error connecting to MySQL database', 'error');
   }
 }
 
