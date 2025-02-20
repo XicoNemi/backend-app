@@ -32,3 +32,4 @@ coverage/
 # Secretos o archivos sensibles
 secrets/
 config/*.secret
+package-lock.json

@@ -10,4 +10,4 @@ router.post('/', verifyToken, createEstab)
 router.put('/:id', verifyToken, updateEstab)
 router.delete('/delete/:id', verifyToken, deleteEstab)
 
-export default router
+export default router;

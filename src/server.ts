@@ -9,7 +9,7 @@ import { Request, Response, NextFunction } from 'express';
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
 import promotionRoutes from './routes/promotion.route';
-import establishmentRoutes from './routes/establishment.route';
+// import establishmentRoutes from './routes/establishment.route';
 import locationRoutes from './routes/location.route';
 import eventRoutes from './routes/event.routes';
 import itineraryRoutes from './routes/itinerary.routes';
@@ -17,7 +17,11 @@ import pointsRoutes from './routes/pointOfInterest.routes';
 import errorHandler from './middleware/errorHandler';
 import { connectToDatabase } from './config/database';
 import { setupSwagger } from './config/swagger';
+import imageRoutes from './routes/image.routes';
+import businessRoutes from './routes/business.routes';
+import contentRoutes from './routes/content.routes';
 import { AppError } from './utils/errorApp';
+
 
 export class Server {
   private app: express.Express;
@@ -41,6 +45,10 @@ export class Server {
 
     this.app.use('/api/users', userRoutes);
     this.app.use('/api/auth', authRoutes);
+    // this.app.use('/api/estabs', establishmentRoutes);
+    this.app.use('/api/images', imageRoutes);
+    this.app.use('/api/business', businessRoutes);
+    this.app.use('/api/contents', contentRoutes);
     this.app.use('/api/promotions', promotionRoutes);
     this.app.use('/api/estabs', establishmentRoutes);
     this.app.use('/api/locations', locationRoutes);
