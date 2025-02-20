@@ -30,8 +30,8 @@ export class Server {
     this.app = express();
     this.configuration();
     this.middlewares();
-    this.routes();
     this.setupSwagger();
+    this.routes();
   }
 
   setupSwagger() {

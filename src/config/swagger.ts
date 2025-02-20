@@ -5,7 +5,7 @@ import { loggerXiconemi } from '../utils/colorLogs';
 import { urlSwagger } from '../utils/urlVerification';
 
 // const url = urlSwagger.production;
-const url = urlSwagger.production;
+const url = urlSwagger.local;
 
 const options: swaggerJSDoc.Options = {
   definition: {
