@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../utils/errorApp';
 import jwt from 'jsonwebtoken';
 
 interface Payload {
@@ -10,15 +11,14 @@ interface Payload {
 }
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction): void => {
+  
   const authHeader = req.header('Authorization');
+  // console.log(authHeader);
   const token =
     authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
-    console.log(token);
-    
   if (!token) {
-    res.status(401).json({ message: 'No token provided' });
-    return;
+    return next(new AppError('No token provided', 401));
   }
 
   try {
@@ -26,10 +26,10 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction): vo
       token as string,
       process.env.JWT_SECRET as string
     ) as Payload;
-    // req.userId = payload.userId; // para despues
+
+    // req.userId = payload.userId; // para después si lo necesitas
     return next();
   } catch (error) {
-    res.status(401).json({ message: 'Invalid token' });
-    return;
+    return next(new AppError('Invalid token', 401));
   }
 };

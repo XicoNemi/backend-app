@@ -3,6 +3,8 @@ import { hashPassword } from '../utils/bcrypt';
 import { generateToken } from '../utils/token';
 import { z, ZodError } from 'zod'; // Asegúrate de importar ZodError
 import { newAccount } from '../services/emailService';
+import { AppError } from '../utils/errorApp';
+import e from 'express';
 
 const prisma = new PrismaClient();
 
@@ -23,91 +25,179 @@ const userSchema = z.object({
 });
 
 export class UserModel {
+  // ? GET ALL USERS
   async getAllUsers() {
     const users = await prisma.user.findMany();
     return users;
   }
 
+  // ? CREATE USER
   async createUser(data: User) {
     try {
       userSchema.parse(data);
     } catch (error) {
       if (error instanceof ZodError) {
-        //validation of zod
-        return {
-          message: error.errors.map((e) => e.message).join(', '),
-        };
+        throw new AppError(error.errors.map((e) => e.message).join(', '), 400);
       }
-      return { message: 'Error desconocido' };
+      throw new AppError('Error desconocido en validación', 400);
     }
 
-    // Verificar si el usuario ya existe
     const isExist = await prisma.user.findUnique({ where: { email: data.email } });
     if (isExist) {
-      return {
-        message: 'El correo ya existe.',
-      };
+      throw new AppError('El correo ya existe.', 409);
     }
 
     data.password = await hashPassword(data.password);
     data.token = generateToken();
     newAccount(data.name, data.email, data.token);
-    data.birthday = data.birthday;
+
     const user = await prisma.user.create({ data });
     return {
       id: user.id,
-      message:
-        'Usuario creado correctamente, por favor revisa tu correo para activar tu cuenta.',
+      message: 'Usuario creado correctamente, revisa tu correo.',
     };
   }
 
+  // ? UPDATE USER
   async updateUser(id: number, data: User) {
     try {
       userSchema.parse(data);
     } catch (error) {
       if (error instanceof ZodError) {
-        return {
-          message: error.errors.map((e) => e.message).join(', '),
-        };
+        const errorDetails = error.errors.map((e) => ({
+          field: e.path.join('.'),
+          message: e.message,
+        }));
+        throw new AppError('Validation failed', 400, errorDetails);
       }
-      return { message: 'Error desconocido' };
+      throw new AppError('Unknown validation error', 400);
     }
-    // Verificar si el usuario ya existe
-    const isExist = await prisma.user.findUnique({ where: { email: data.email } });
-    if (isExist && isExist.id !== id) {
+
+    try {
+      const existingUser = await prisma.user.findUnique({ where: { id } });
+
+      if (!existingUser) {
+        throw new AppError('User not found', 404);
+      }
+
+      if (data.email) {
+        const isEmailTaken = await prisma.user.findUnique({
+          where: { email: data.email },
+        });
+        if (isEmailTaken && isEmailTaken.id !== id) {
+          throw new AppError('Email already exists', 409);
+        }
+      }
+
+      if (data.password) {
+        data.password = await hashPassword(data.password);
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id },
+        data,
+      });
+
       return {
-        message: 'El correo ya existe.',
+        message: 'User updated successfully',
+        user: updatedUser,
       };
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError('Internal server error', 500);
     }
-    data.password = await hashPassword(data.password);
-    const user = await prisma.user.update({
-      where: { id },
-      data,
-    });
-    return {
-      message: 'Usuario actualizado correctamente.',
-    };
   }
 
+  // ? PARTIAL UPDATE USER
+  async partialUpdateUser(id: number, data: Partial<User>) {
+    if (Object.keys(data).length === 0) {
+      throw new AppError('At least one field must be provided to update', 400);
+    }
+
+    try {
+      userSchema.partial().parse(data);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errorDetails = error.errors.map((e) => ({
+          field: e.path.join('.'),
+          message: e.message,
+        }));
+        throw new AppError('Validation failed', 400, errorDetails);
+      }
+      throw new AppError('Unknown validation error', 400);
+    }
+
+    try {
+      const existingUser = await prisma.user.findUnique({ where: { id } });
+
+      if (!existingUser) {
+        throw new AppError('User not found', 404);
+      }
+
+      if (data.email) {
+        const isEmailTaken = await prisma.user.findUnique({
+          where: { email: data.email },
+        });
+        if (isEmailTaken && isEmailTaken.id !== id) {
+          throw new AppError('Email already exists', 409);
+        }
+      }
+
+      if (data.password) {
+        data.password = await hashPassword(data.password);
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id },
+        data,
+      });
+
+      return {
+        message: 'User partially updated successfully',
+        user: updatedUser,
+      };
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      throw new AppError(
+        'Internal server error',
+        500,
+        error instanceof Error ? error.message : undefined
+      );
+    }
+  }
+
+  // ? DELETE USER
   async deleteUser(id: number) {
-    const isExist = await prisma.user.findUnique({ where: { id } });
-    if (!isExist) {
-      return {
-        message: 'Usuario no encontrado.',
-      };
-    }
-    const userDeleted = await prisma.user.delete({
-      where: { id },
-    });
+    try {
+      const isExist = await prisma.user.findUnique({ where: { id } });
+      if (!isExist) throw new AppError('User not found', 404);
 
-    return userDeleted;
+      const userDeleted = await prisma.user.delete({ where: { id } });
+
+      return {
+        message: 'User deleted successfully',
+        userId: userDeleted.id,
+      };
+    } catch (error) {
+      throw new AppError(
+        'Internal server error',
+        500,
+        error instanceof Error ? error.message : undefined
+      );
+    }
   }
 
+  // ? DELETE USER BY EMAIL
   async deleteByEmail(email: string) {
     const isExist = await prisma.user.findUnique({ where: { email } });
     if (!isExist) {
       return {
-        message: 'Usuario no encontrado.',
+        message: 'User not found',
       };
     }
     const userDeleted = await prisma.user.delete({
@@ -117,18 +207,29 @@ export class UserModel {
     return userDeleted;
   }
 
+  // ? GET USER
   async getUser(id: number) {
-    const user = await prisma.user.findUnique({
-      where: { id },
-    });
-    if (!user) {
-      return {
-        message: 'Usuario no encontrado.',
-      };
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id },
+      });
+      if (!user) {
+        throw new AppError('User not found', 404);
+      }
+      return user;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        'Internal server error',
+        500,
+        error instanceof Error ? error.message : undefined
+      );
     }
-    return user;
   }
 
+  // ? ACTIVE ACCOUNT
   async activeAccount(token: string) {
     const user = await prisma.user.findFirst({
       where: { token },

@@ -1,10 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import fs from 'node:fs'
-import path from 'node:path'
+import fs from 'node:fs';
+import path from 'node:path';
 import { loggerXiconemi } from './utils/colorLogs';
-
+import { Request, Response, NextFunction } from 'express';
 // Routes
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
@@ -14,8 +14,10 @@ import locationRoutes from './routes/location.route';
 import eventRoutes from './routes/event.routes';
 import itineraryRoutes from './routes/itinerary.routes';
 import pointsRoutes from './routes/pointOfInterest.routes';
+import errorHandler from './middleware/errorHandler';
 import { connectToDatabase } from './config/database';
 import { setupSwagger } from './config/swagger';
+import { AppError } from './utils/errorApp';
 
 export class Server {
   private app: express.Express;
@@ -36,16 +38,24 @@ export class Server {
     this.app.get('/', (req, res) => {
       res.send('This is the API of the app');
     });
+
     this.app.use('/api/users', userRoutes);
     this.app.use('/api/auth', authRoutes);
-    this.app.use('/api/promotions', promotionRoutes)
-    this.app.use('/api/estabs', establishmentRoutes)
-    this.app.use('/api/locations', locationRoutes)
-    this.app.use('/api/events', eventRoutes)
-    this.app.use('/api/itineraries', itineraryRoutes)
-    this.app.use('/api/points', pointsRoutes)
     this.app.use('/api/promotions', promotionRoutes);
     this.app.use('/api/estabs', establishmentRoutes);
+    this.app.use('/api/locations', locationRoutes);
+    this.app.use('/api/events', eventRoutes);
+    this.app.use('/api/itineraries', itineraryRoutes);
+    this.app.use('/api/points', pointsRoutes);
+
+    this.app.use('*', (req, res, next) => {
+      next(new AppError('Route not found', 404));
+    });
+
+    this.app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+      errorHandler(err, req, res, next);
+    });
+
     return this.app;
   }
 
