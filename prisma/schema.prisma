@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//* ENUMS
+//? ENUMS *//
 
 enum ItineraryType {
   CULTURAL
@@ -23,17 +23,14 @@ enum ItineraryType {
   FAMILIAR
 }
 
-enum EstablishmentType {
-  RESTAURANTE
-  HOTEL
-  SPA
-  CENTRO_COMERCIAL
-  MUSEO
-  BAR_CLUB
-  GALERIA_ARTE
+enum CategoryType {
+  HOSPEDAJE
+  GASTRONOMIA
+  EVENTOS
+  TURISMO
+  ITINERARIOS
   CINE
-  PARQUE_TEMATICO
-  RESORT
+  OTRO
 }
 
 enum StatusEvent {
@@ -46,6 +43,21 @@ enum TypeUser {
   ADMIN
 }
 
+enum Genre {
+  MASCULINO
+  FEMENINO
+  NO_DEFINIDO
+}
+
+enum TypeContent {
+  TURISMO
+  EVENTOS
+  GASTRONOMIA
+  HOSPEDAJE
+}
+
+//? TABLES *//
+
 //* USUARIO
 model User {
   id               Int                @id @default(autoincrement())
@@ -56,6 +68,8 @@ model User {
   password         String
   tel              String
   birthday         Int
+  genre            Genre?
+  image            String?
   type             TypeUser           @default(COMMON)
   travel           Travel?            @relation(fields: [travelId], references: [id], onDelete: Cascade)
   travelId         Int?
@@ -72,7 +86,6 @@ model Event {
   startDate       Int
   endDate         Int
   status          StatusEvent
-  Establishment   Establishment[]
   pointOfInterest pointOfInterest[]
 }
 
@@ -93,26 +106,10 @@ model Promotion {
   id            Int             @id @default(autoincrement())
   name          String
   description   String
-  Establishment Establishment[]
 }
 
 //* ESTABLECIMIENTO
-model Establishment {
-  id                        Int                         @id @default(autoincrement())
-  idFacebook                String?
-  name                      String
-  description               String
-  schedule                  Int
-  image                     String
-  event                     Event?                      @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId                   Int?
-  location                  Location                    @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  locationId                Int
-  promotion                 Promotion?                  @relation(fields: [promotionId], references: [id], onDelete: Cascade)
-  promotionId               Int?
-  ItineraryHasEstablishment ItineraryHasEstablishment[]
-  type                      EstablishmentType
-}
+
 
 //* UBICACION
 model Location {
@@ -120,7 +117,6 @@ model Location {
   street          String
   lat             String
   lng             String
-  Establishment   Establishment[]
   pointOfInterest pointOfInterest[]
 }
 
@@ -189,5 +185,24 @@ model ItineraryHasEstablishment {
   itineraryId     Int?
   establishmentId Int?
   Itinerary       Itinerary?     @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
-  Establishment   Establishment? @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+}
+
+model Content {
+  id          Int         @id @default(autoincrement())
+  type        TypeContent
+  title       String
+  description String
+  url_logo    String?
+}
+
+model Business {
+  id              Int               @id @default(autoincrement())
+  name            String
+  url_logo        String?
+  category        CategoryType
+  address         String
+  tel             String
+  web_site        String?
+  social_networks Json?
+  outstanding     Boolean           @default(false)
 }
