@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { loggerXiconemi } from '../utils/colorLogs';
 const prisma = new PrismaClient();
 
-export async function connectToDatabase() {
+export async function connectToMysql() {
   try {
     await prisma.$connect();
     loggerXiconemi('green', 'Connected to MySQL database', 'mysql');

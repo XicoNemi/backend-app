@@ -9,6 +9,7 @@ import {
 } from '../controllers/user.controller';
 
 import { verifyToken } from '../middleware/verifyToken';
+import { authorizeRole } from '../middleware/authorizeRole';
 
 const router = Router();
 
@@ -18,6 +19,14 @@ const router = Router();
  *  name: Users
  *  description: Endpoints for users
  */
+
+router.get('/profile', verifyToken, (req, res) => {
+  res.json({ message: 'Profile user', user: req.user });
+});
+
+router.get('/admin', verifyToken, authorizeRole(['ADMIN']), (req, res) => {
+  res.json({ message: 'Dashboard admin', user: req.user });
+});
 
 /**
  * @swagger
