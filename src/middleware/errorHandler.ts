@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
 import { AppError } from '../utils/errorApp';
 
 const errorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
-//   console.error(err);
 
   if (
     err instanceof SyntaxError &&
@@ -23,6 +23,16 @@ const errorHandler = (err: unknown, req: Request, res: Response, next: NextFunct
       details: err.details || null,
     });
   }
+
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    return res.status(400).json({
+      error: true,
+      message: `Prisma error: ${err.message}`,
+      code: err.code,
+      meta: err.meta,
+    });
+  }
+
 
   res.status(500).json({
     error: true,

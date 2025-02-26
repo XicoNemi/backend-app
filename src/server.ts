@@ -15,23 +15,37 @@ import eventRoutes from './routes/event.routes';
 import itineraryRoutes from './routes/itinerary.routes';
 import pointsRoutes from './routes/pointOfInterest.routes';
 import errorHandler from './middleware/errorHandler';
-import { connectToDatabase } from './config/database';
+import { connectToMysql } from './config/sqlDataBase';
 import { setupSwagger } from './config/swagger';
 import imageRoutes from './routes/image.routes';
 import businessRoutes from './routes/business.routes';
 import contentRoutes from './routes/content.routes';
 import { AppError } from './utils/errorApp';
 
+// import message
+import { createServer } from 'http';
+import { Server as SocketServer, Socket } from 'socket.io';
+import { MessageModel } from './models/chat.model';
+import { connectToMongoDB } from './config/nosqlDataBase';
+import chatRotes from './routes/chat.routes';
 
 export class Server {
   private app: express.Express;
+  private io: SocketServer;
+  private httpServer: ReturnType<typeof createServer>;
 
   constructor() {
     this.app = express();
+    this.httpServer = createServer(this.app);
+    this.io = new SocketServer(this.httpServer, {
+      cors: { origin: '*' },
+    });
+
     this.configuration();
     this.middlewares();
     this.setupSwagger();
     this.routes();
+    this.sockets();
   }
 
   setupSwagger() {
@@ -54,6 +68,7 @@ export class Server {
     this.app.use('/api/events', eventRoutes);
     this.app.use('/api/itineraries', itineraryRoutes);
     this.app.use('/api/points', pointsRoutes);
+    this.app.use('/api/chat', chatRotes);
 
     this.app.use('*', (req, res, next) => {
       next(new AppError('Route not found', 404));
@@ -94,11 +109,37 @@ export class Server {
     this.app.use(express.urlencoded({ extended: false }));
   }
 
+  sockets() {
+    this.io.on('connection', (socket: Socket) => {
+      loggerXiconemi('green', `New connection: ${socket.id}`, 'success');
+
+      socket.on('joinRoom', ({ userId, receiverId }) => {
+        const roomId = [userId, receiverId].sort().join('-');
+        socket.join(roomId); // ! UNIRSE A UNA SALA
+        loggerXiconemi('green', `User ${userId} joined room ${roomId}`, 'success');
+      });
+
+      socket.on('sendMessage', async ({ senderId, receiverId, message }) => {
+        const roomId = [senderId, receiverId].sort().join('-');
+
+        const newMessage = new MessageModel({ senderId, receiverId, message });
+        await newMessage.save();
+
+        this.io.to(roomId).emit('receiveMessage', { senderId, message });
+      });
+
+      socket.on('disconnect', () => {
+        loggerXiconemi('red', `User ${socket.id} disconnected`, 'success');
+      });
+    });
+  }
+
   listen() {
     this.app.listen(this.app.get('port'), async () => {
       loggerXiconemi('cyan', `Server running on port ${this.app.get('port')}`, 'success');
 
-      await connectToDatabase();
+      await connectToMysql();
+      await connectToMongoDB();
     });
   }
 }

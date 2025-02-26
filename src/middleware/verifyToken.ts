@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errorApp';
 import jwt from 'jsonwebtoken';
 
+const { JWT_SECRET } = process.env;
+
 interface Payload {
   userId: number;
   email: string;
@@ -10,10 +12,16 @@ interface Payload {
   exp: number;
 }
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: Payload;
+    }
+  }
+}
+
 export const verifyToken = (req: Request, res: Response, next: NextFunction): void => {
-  
   const authHeader = req.header('Authorization');
-  // console.log(authHeader);
   const token =
     authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
@@ -22,13 +30,10 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction): vo
   }
 
   try {
-    const payload = jwt.verify(
-      token as string,
-      process.env.JWT_SECRET as string
-    ) as Payload;
+    const payload = jwt.verify(token, JWT_SECRET as string) as Payload;
 
-    // req.userId = payload.userId; // para después si lo necesitas
-    return next();
+    req.user = payload;
+    next();
   } catch (error) {
     return next(new AppError('Invalid token', 401));
   }

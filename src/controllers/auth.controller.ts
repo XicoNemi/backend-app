@@ -98,6 +98,9 @@ export const signIn = async (
   next: Function
 ): Promise<void> => {
   try {
+    if (!req.body.email || !req.body.password) {
+      return next(new AppError('Email and password are required', 400));
+    }
     const { email, password } = req.body;
 
     const user = await userModel.getUserByEmail(email);
@@ -110,7 +113,7 @@ export const signIn = async (
       return next(new AppError('Wrong password or email', 400));
     }
 
-    const token = await generateToken(user);
+    const token = generateToken(user);
     user.password = '';
 
     res.status(200).json({ user, token });
