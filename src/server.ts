@@ -9,7 +9,6 @@ import { Request, Response, NextFunction } from 'express';
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
 import promotionRoutes from './routes/promotion.route';
-// import establishmentRoutes from './routes/establishment.route';
 import locationRoutes from './routes/location.route';
 import eventRoutes from './routes/event.routes';
 import itineraryRoutes from './routes/itinerary.routes';
