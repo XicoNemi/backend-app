@@ -1,16 +1,18 @@
 import { z } from "zod";
-import { PrismaClient, Promotion } from "@prisma/client";
+import { PrismaClient, Promotions } from "@prisma/client";
 
 const prisma = new PrismaClient()
 const promotionSchema = z.object({
+    businessId: z.number().int().positive("El id del negocio debe ser un número positivo."),
     name: z.string().min(1, "Campo requerido."),
-    description: z.string().min(1, "Campo requerido.")
+    description: z.string().min(1, "Campo requerido."),
+    status: z.boolean()
 })
 
 export class PromotionModel {
     async getAllPromotions() {
-        const promotions = await prisma.promotion.findMany();
-        if(promotions.length == 0) {
+        const promotions = await prisma.promotions.findMany();
+        if (promotions.length == 0) {
             return {
                 "message": "No se encontraron promociones."
             }
@@ -20,10 +22,10 @@ export class PromotionModel {
 
 
     async getPromotionById(id: number) {
-        const promotion = await prisma.promotion.findUnique({
+        const promotion = await prisma.promotions.findUnique({
             where: { id: id }
         });
-        if(!promotion) {
+        if (!promotion) {
             return {
                 message: "Promoción no encontrada."
             }
@@ -31,7 +33,7 @@ export class PromotionModel {
         return promotion;
     }
 
-    async createPromotion(data: Promotion) {
+    async createPromotion(data: Promotions) {
         try {
             promotionSchema.parse(data);
         } catch (error) {
@@ -42,14 +44,14 @@ export class PromotionModel {
             }
             return { message: "Error desconocido" };
         }
-        const promotion = await prisma.promotion.create({ data });
+        const promotion = await prisma.promotions.create({ data });
         return {
             id: promotion.id,
             message: "Promoción creada correctamente."
         };
     }
 
-    async updatePromotion(id: number, data: Promotion) {
+    async updatePromotion(id: number, data: Promotions) {
         try {
             promotionSchema.parse(data);
         } catch (error) {
@@ -60,11 +62,11 @@ export class PromotionModel {
             }
             return { message: "Error desconocido" };
         }
-        const promotion = await prisma.promotion.update({
+        const promotion = await prisma.promotions.update({
             where: { id: id },
             data: data
         });
-        if(!promotion) {
+        if (!promotion) {
             return {
                 message: "Promoción no encontrada."
             }
@@ -76,13 +78,13 @@ export class PromotionModel {
     }
 
     async deletePromotion(id: number) {
-        const isExist = await prisma.promotion.findUnique({ where: { id: id } });
-        if(!isExist) {
+        const isExist = await prisma.promotions.findUnique({ where: { id: id } });
+        if (!isExist) {
             return {
                 message: "Promoción no encontrada."
             };
         }
-        const promotion = await prisma.promotion.delete({
+        const promotion = await prisma.promotions.delete({
             where: { id: id }
         });
 

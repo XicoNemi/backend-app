@@ -19,7 +19,6 @@ import { connectToMysql } from './config/sqlDataBase';
 import { setupSwagger } from './config/swagger';
 import imageRoutes from './routes/image.routes';
 import businessRoutes from './routes/business.routes';
-import contentRoutes from './routes/content.routes';
 import { AppError } from './utils/errorApp';
 
 // import message
@@ -59,10 +58,8 @@ export class Server {
 
     this.app.use('/api/users', userRoutes);
     this.app.use('/api/auth', authRoutes);
-    // this.app.use('/api/estabs', establishmentRoutes);
     this.app.use('/api/images', imageRoutes);
     this.app.use('/api/business', businessRoutes);
-    this.app.use('/api/contents', contentRoutes);
     this.app.use('/api/promotions', promotionRoutes);
     this.app.use('/api/locations', locationRoutes);
     this.app.use('/api/events', eventRoutes);

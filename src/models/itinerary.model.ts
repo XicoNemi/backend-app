@@ -1,18 +1,19 @@
-import { Itinerary, PrismaClient } from "@prisma/client";
+import { Itineraries, PrismaClient } from "@prisma/client";
 import { z, ZodError } from "zod";
 
 const prisma = new PrismaClient()
 
 const itinerarySchema = z.object({
+    userId: z.number().int().positive("El id del usuario debe ser un número positivo."),
     name: z.string().min(1, "Campo requerido."),
-    description: z.string().min(1, "Campo requerido."),
-    type: z.string().min(1, "Campo requerido."),
-
+    startDate: z.number().int().positive("Fecha en formato unix."),
+    endDate: z.number().int().positive("Fecha en formato unix."),
+    status: z.boolean()
 })
 
 export class ItineraryModel {
     async getAllItineraries() {
-        const itineraries = await prisma.itinerary.findMany()
+        const itineraries = await prisma.itineraries.findMany()
         if (itineraries.length == 0) {
             return {
                 message: 'No se encontraron itinerarios.'
@@ -22,7 +23,7 @@ export class ItineraryModel {
     }
 
     async getItineraryById(id: number) {
-        const itinerary = await prisma.itinerary.findUnique({ where: { id } })
+        const itinerary = await prisma.itineraries.findUnique({ where: { id } })
         if (!itinerary) {
             return {
                 message: 'Itinerario no encontrado.'
@@ -31,7 +32,7 @@ export class ItineraryModel {
         return itinerary
     }
 
-    async createItinerary(data: Itinerary) {
+    async createItinerary(data: Itineraries) {
         try {
             itinerarySchema.parse(data)
         } catch (error) {
@@ -42,14 +43,14 @@ export class ItineraryModel {
             }
         }
 
-        const itinerary = await prisma.itinerary.create({ data })
+        const itinerary = await prisma.itineraries.create({ data })
         return {
             id: itinerary.id,
             message: 'Itinerario creado correctamente.'
         }
     }
 
-    async updateItinerary(id: number, data: Itinerary) {
+    async updateItinerary(id: number, data: Itineraries) {
         try {
             itinerarySchema.parse(data)
         } catch (error) {
@@ -59,14 +60,14 @@ export class ItineraryModel {
                 }
             }
         }
-        const isExist = await prisma.itinerary.findUnique({ where: { id } })
+        const isExist = await prisma.itineraries.findUnique({ where: { id } })
         if (!isExist) {
             return {
                 message: 'Itinerario no encontrado.'
             }
         }
-        
-        const itinerary = await prisma.itinerary.update({ where: { id }, data })
+
+        const itinerary = await prisma.itineraries.update({ where: { id }, data })
         return {
             id: itinerary.id,
             message: 'Itinerario actualizado correctamente.'
@@ -75,13 +76,13 @@ export class ItineraryModel {
 
     async deleteItinerary(id: number) {
         try {
-            const itinerary = await prisma.itinerary.findUnique({ where: { id } })
+            const itinerary = await prisma.itineraries.findUnique({ where: { id } })
             if (!itinerary) {
                 return {
                     message: 'Itinerario no encontrado.'
                 }
             }
-            await prisma.itinerary.delete({ where: { id } })
+            await prisma.itineraries.delete({ where: { id } })
             return {
                 message: 'Itinerario eliminado correctamente.'
             }
