@@ -9,26 +9,232 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id         Int      @id @default(autoincrement())
-  name       String  
-  lastname   String
-  email      String   @unique
-  password   String
-  typeUser   TypeUser @relation(fields: [typeUserId], references: [id])
-  typeUserId Int      @default(1)
-  active     Boolean  @default(false)
-  token      String?
+//? |--> ENUMS <--| *//
+
+enum CategoryType {
+  Hospedaje
+  Gastronomia
+  Eventos
+  Turismo
+  Itinerarios
+  Cine
+  Otro
 }
 
-model TypeUser {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  User      User[]
+enum TypeUser {
+  Common
+  BusinessOwner
+  SuperAdmin
+}
+
+enum Gender {
+  Masculino
+  Femenino
+  Otro
+}
+
+enum TypeEvent {
+  General
+  Cultural
+  Gastronomico
+  Aventura
+  Relax
+  Familiar
+  Otro
+}
+
+//? |--> TABLAS <--|*//
+
+//* USUARIO
+model Users {
+  id             Int             @id @default(autoincrement())
+  subscriptionId Int?
+  facebookId     String?
+  name           String
+  lastname       String
+  email          String          @unique
+  password       String
+  tel            String
+  birthday       Int
+  gender         Gender?
+  url_image      String?
+  type           TypeUser        @default(Common)
+  status         Boolean         @default(false)
+  token          String?
+  Route          Routes[]
+  Itinerary      Itineraries[]
+  Businesses     Businesses[]
+  subscriptions  subscriptions[]
+  reviews        reviews[]
+  userHasRoute   userHasRoute[]
+}
+
+//* EVENTO
+model Events {
+  id                Int                 @id @default(autoincrement())
+  userId            Int
+  name              String
+  startDate         Int
+  endDate           Int
+  status            Boolean             @default(false)
+  type              TypeEvent
+  pointOfInterest   pointsOfInterest[]
+  reviews           reviews[]
+  itineraryHasEvent itineraryHasEvent[]
+}
+
+//* PUNTO DE INTERES
+model pointsOfInterest {
+  id            Int             @id @default(autoincrement())
+  name          String
+  description   String
+  url_image     String
+  locationId    Int
+  eventId       Int?
+  businessId    Int?
+  status        Boolean         @default(false)
+  //* RELATIONS
+  location      Location        @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  event         Events?         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  business      Businesses?     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  routeHasPoint routeHasPoint[]
+}
+
+//* UBICACION
+model Location {
+  id              Int                @id @default(autoincrement())
+  street          String
+  lat             Decimal
+  lng             Decimal
+  pointOfInterest pointsOfInterest[]
+}
+
+//* PROMOCION
+model Promotions {
+  id          Int         @id @default(autoincrement())
+  businessId  Int
+  name        String
+  description String
+  status      Boolean     @default(false)
+  //*RELATIONS
+  business    Businesses? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+//* ITINERARIO
+model Itineraries {
+  id                Int                 @id @default(autoincrement())
+  userId            Int
+  name              String
+  startDate         Int
+  endDate           Int
+  status            Boolean             @default(false)
+  //* RELATIONS
+  user              Users               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itineraryHasEvent itineraryHasEvent[]
+}
+
+//* RUTAS
+model Routes {
+  id            Int             @id @default(autoincrement())
+  ownerId       Int
+  name          String
+  description   String
+  stravaData    Json?
+  distance      Float?
+  time          Int?
+  status        Boolean         @default(false)
+  //* RELATIONS
+  owner         Users           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  userHasRoute  userHasRoute[]
+  routeHasPoint routeHasPoint[]
+}
+
+model Businesses {
+  id              Int                @id @default(autoincrement())
+  ownerId         Int
+  name            String
+  description     String
+  url_image       String?
+  category        CategoryType
+  address         String
+  tel             String
+  web_site        String?
+  social_networks Json?
+  status          Boolean            @default(false)
+  //* RELATIONS
+  owner           Users              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  pointOfInterest pointsOfInterest[]
+  Promotion       Promotions[]
+  reviews         reviews[]
+}
+
+model plans {
+  id            Int             @id @default(autoincrement())
+  name          String
+  price         Float
+  features      String
+  status        Boolean         @default(false)
+  subscriptions subscriptions[]
+}
+
+model subscriptions {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  planId    Int
+  startDate Int
+  endDate   Int
+  status    Boolean @default(false)
+  //* RELATIONS
+  user      Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      plans   @relation(fields: [planId], references: [id], onDelete: Cascade)
+}
+
+model reviews {
+  id         Int         @id @default(autoincrement())
+  userId     Int
+  businessId Int?
+  eventId    Int?
+  rating     Decimal     @db.Decimal(2, 1)
+  comment    String
+  //* RELATIONS
+  user       Users       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Businesses? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  event      Events?     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+//? |-->TABLAS DERIVADAS <--|
+
+//* USUARIO TIENE ITINERARIO
+model itineraryHasEvent {
+  id          Int         @id @default(autoincrement())
+  itineraryId Int
+  eventId     Int
+  status      Boolean     @default(false)
+  //* RELATIONS
+  itinerary   Itineraries @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  event       Events      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model userHasRoute {
+  id      Int     @id @default(autoincrement())
+  userId  Int
+  routeId Int
+  status  Boolean @default(false)
+  //* RELATIONS
+  user    Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  route   Routes  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+}
+
+model routeHasPoint {
+  id      Int              @id @default(autoincrement())
+  routeId Int
+  pointId Int
+  status  Boolean          @default(false)
+  //* RELATIONS
+  route   Routes           @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  point   pointsOfInterest @relation(fields: [pointId], references: [id], onDelete: Cascade)
 }
