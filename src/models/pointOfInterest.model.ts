@@ -1,16 +1,17 @@
-import { pointOfInterest, PrismaClient } from "@prisma/client";
+import { pointsOfInterest, PrismaClient } from "@prisma/client";
 import {z, ZodError} from 'zod';
 
 const prisma = new PrismaClient();
 const pointOfInterestSchema = z.object({
     name: z.string(),
     description: z.string(),
-    image: z.string().min(1, "Campo requerido"),
-    
+    url_image: z.string().min(1, "Campo requerido"),
+    locationId: z.number().int().min(1, "Campo requerido"),
+    status: z.boolean()
 })
 export class PointModel{
     async getAllPoints(){
-        const points = await prisma.pointOfInterest.findMany();
+        const points = await prisma.pointsOfInterest.findMany();
         if(points.length == 0){
             return {
                 message: 'No se encontraron puntos de interés.'
@@ -20,7 +21,7 @@ export class PointModel{
     }
 
     async getPointById(id: number){
-        const point = await prisma.pointOfInterest.findUnique({where: {id}});
+        const point = await prisma.pointsOfInterest.findUnique({where: {id}});
         if(!point){
             return {
                 message: 'Punto de interés no encontrado.'
@@ -29,7 +30,7 @@ export class PointModel{
         return point;
     }
 
-    async createPoint(data: pointOfInterest){
+    async createPoint(data: pointsOfInterest){
         try{
             pointOfInterestSchema.parse(data);
         }catch(error){
@@ -39,14 +40,14 @@ export class PointModel{
                 }
             }
         }
-        const point = await prisma.pointOfInterest.create({data});
+        const point = await prisma.pointsOfInterest.create({data});
         return {
             id: point.id,
             message: 'Punto de interés creado correctamente.'
         }
     }
 
-    async updatePoint(id: number, data: pointOfInterest){
+    async updatePoint(id: number, data: pointsOfInterest){
         try{
             pointOfInterestSchema.parse(data);
         }catch(error){
@@ -56,7 +57,7 @@ export class PointModel{
                 }
             }
         }
-        const point = await prisma.pointOfInterest.update({where: {id}, data});
+        const point = await prisma.pointsOfInterest.update({where: {id}, data});
         return {
             id: point.id,
             message: 'Punto de interés actualizado correctamente.'
@@ -65,13 +66,13 @@ export class PointModel{
 
     async deletePoint(id: number){
         try {
-            const point = await prisma.pointOfInterest.findUnique({where: {id}});
+            const point = await prisma.pointsOfInterest.findUnique({where: {id}});
             if(!point){
                 return {
                     message: 'Punto de interés no encontrado.'
                 }
             }
-            await prisma.pointOfInterest.delete({where: {id}});
+            await prisma.pointsOfInterest.delete({where: {id}});
             return {
                 message: 'Punto de interés eliminado correctamente.'
             }

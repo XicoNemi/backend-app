@@ -1,9 +1,11 @@
-import { Event, PrismaClient } from "@prisma/client";
+import { Events, PrismaClient } from "@prisma/client";
+import { userInfo } from "node:os";
 import { z, ZodError } from "zod";
 
 const prisma = new PrismaClient()
 
 const eventSchema = z.object({
+    userId: z.number().int().min(1, 'Campo requerido.'),
     name: z.string().min(1, 'Campo requerido.'),
     startDate: z.number().min(1, 'Campo requerido.'),
     endDate: z.number().min(1, 'Campo requerido.'),
@@ -12,7 +14,7 @@ const eventSchema = z.object({
 
 export class EventModel {
     async getAllEvents() {
-        const events = await prisma.event.findMany()
+        const events = await prisma.events.findMany()
         if (events.length == 0) {
             return {
                 message: 'No se encontraron eventos.'
@@ -22,7 +24,7 @@ export class EventModel {
     }
 
     async getEventById(id: number) {
-        const event = await prisma.event.findUnique({ where: { id } })
+        const event = await prisma.events.findUnique({ where: { id } })
         if (!event) {
             return {
                 message: 'Evento no encontrado.'
@@ -31,7 +33,7 @@ export class EventModel {
         return event
     }
 
-    async createEvent(data: Event) {
+    async createEvent(data: Events) {
         try {
             eventSchema.parse(data)
         } catch (error) {
@@ -42,14 +44,14 @@ export class EventModel {
             }
         }
 
-        const event = await prisma.event.create({ data })
+        const event = await prisma.events.create({ data })
         return {
             id: event.id,
             message: 'Evento creado correctamente.'
         }
     }
 
-    async updateEvent(id: number, data: Event) {
+    async updateEvent(id: number, data: Events) {
         try {
             eventSchema.parse(data)
         } catch (error) {
@@ -60,7 +62,7 @@ export class EventModel {
             }
         }
 
-        const event = await prisma.event.update({ where: { id }, data })
+        const event = await prisma.events.update({ where: { id }, data })
         return {
             id: event.id,
             message: 'Evento actualizado correctamente.'
@@ -69,13 +71,13 @@ export class EventModel {
 
     async deleteEvent(id: number) {
         try {
-            const event = await prisma.event.findUnique({ where: { id } })
+            const event = await prisma.events.findUnique({ where: { id } })
             if (!event) {
                 return {
                     message: 'Evento no encontrado.'
                 }
             }
-            await prisma.event.delete({ where: { id } })
+            await prisma.events.delete({ where: { id } })
             return {
                 message: 'Evento eliminado correctamente.'
             }

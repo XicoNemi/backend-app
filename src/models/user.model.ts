@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient, Users } from '@prisma/client';
 import { hashPassword } from '../utils/bcrypt';
 import { generateToken } from '../utils/token';
 import { z, ZodError } from 'zod'; // Asegúrate de importar ZodError
@@ -14,7 +14,7 @@ const userSchema = z.object({
   email: z.string().min(1, 'Campo requerido').email('Formato de email inválido.'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres.'),
   tel: z.string().min(1, 'Campo requerido.'),
-  genre: z.string().min(1, 'Campo requerido.'),
+  gender: z.string().min(1, 'Campo requerido.'),
   birthday: z
     .number()
     .min(1, 'Campo requerido.')
@@ -28,12 +28,12 @@ const userSchema = z.object({
 export class UserModel {
   // ? GET ALL USERS
   async getAllUsers() {
-    const users = await prisma.user.findMany();
+    const users = await prisma.users.findMany();
     return users;
   }
 
   // ? CREATE USER
-  async createUser(data: User) {
+  async createUser(data: Users) {
     try {
       userSchema.parse(data);
     } catch (error) {
@@ -43,7 +43,7 @@ export class UserModel {
       throw new AppError('Error desconocido en validación', 400);
     }
 
-    const isExist = await prisma.user.findUnique({ where: { email: data.email } });
+    const isExist = await prisma.users.findUnique({ where: { email: data.email } });
     if (isExist) {
       throw new AppError('El correo ya existe.', 409);
     }
@@ -52,7 +52,7 @@ export class UserModel {
     data.token = generateToken();
     newAccount(data.name, data.email, data.token);
 
-    const user = await prisma.user.create({ data });
+    const user = await prisma.users.create({ data });
     return {
       id: user.id,
       message: 'Usuario creado correctamente, revisa tu correo.',
@@ -60,7 +60,7 @@ export class UserModel {
   }
 
   // ? UPDATE USER
-  async updateUser(id: number, data: User) {
+  async updateUser(id: number, data: Users) {
     try {
       userSchema.parse(data);
     } catch (error) {
@@ -75,14 +75,14 @@ export class UserModel {
     }
 
     try {
-      const existingUser = await prisma.user.findUnique({ where: { id } });
+      const existingUser = await prisma.users.findUnique({ where: { id } });
 
       if (!existingUser) {
         throw new AppError('User not found', 404);
       }
 
       if (data.email) {
-        const isEmailTaken = await prisma.user.findUnique({
+        const isEmailTaken = await prisma.users.findUnique({
           where: { email: data.email },
         });
         if (isEmailTaken && isEmailTaken.id !== id) {
@@ -94,7 +94,7 @@ export class UserModel {
         data.password = await hashPassword(data.password);
       }
 
-      const updatedUser = await prisma.user.update({
+      const updatedUser = await prisma.users.update({
         where: { id },
         data,
       });
@@ -112,7 +112,7 @@ export class UserModel {
   }
 
   // ? PARTIAL UPDATE USER
-  async partialUpdateUser(id: number, data: Partial<User>) {
+  async partialUpdateUser(id: number, data: Partial<Users>) {
     if (Object.keys(data).length === 0) {
       throw new AppError('At least one field must be provided to update', 400);
     }
@@ -131,14 +131,14 @@ export class UserModel {
     }
 
     try {
-      const existingUser = await prisma.user.findUnique({ where: { id } });
+      const existingUser = await prisma.users.findUnique({ where: { id } });
 
       if (!existingUser) {
         throw new AppError('User not found', 404);
       }
 
       if (data.email) {
-        const isEmailTaken = await prisma.user.findUnique({
+        const isEmailTaken = await prisma.users.findUnique({
           where: { email: data.email },
         });
         if (isEmailTaken && isEmailTaken.id !== id) {
@@ -150,7 +150,7 @@ export class UserModel {
         data.password = await hashPassword(data.password);
       }
 
-      const updatedUser = await prisma.user.update({
+      const updatedUser = await prisma.users.update({
         where: { id },
         data,
       });
@@ -175,10 +175,10 @@ export class UserModel {
   // ? DELETE USER
   async deleteUser(id: number) {
     try {
-      const isExist = await prisma.user.findUnique({ where: { id } });
+      const isExist = await prisma.users.findUnique({ where: { id } });
       if (!isExist) throw new AppError('User not found', 404);
 
-      const userDeleted = await prisma.user.delete({ where: { id } });
+      const userDeleted = await prisma.users.delete({ where: { id } });
 
       return {
         message: 'User deleted successfully',
@@ -195,13 +195,13 @@ export class UserModel {
 
   // ? DELETE USER BY EMAIL
   async deleteByEmail(email: string) {
-    const isExist = await prisma.user.findUnique({ where: { email } });
+    const isExist = await prisma.users.findUnique({ where: { email } });
     if (!isExist) {
       return {
         message: 'User not found',
       };
     }
-    const userDeleted = await prisma.user.delete({
+    const userDeleted = await prisma.users.delete({
       where: { email },
     });
 
@@ -211,7 +211,7 @@ export class UserModel {
   // ? GET USER
   async getUser(id: number) {
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id },
       });
       if (!user) {
@@ -232,7 +232,7 @@ export class UserModel {
 
   // ? ACTIVE ACCOUNT
   async activeAccount(token: string) {
-    const user = await prisma.user.findFirst({
+    const user = await prisma.users.findFirst({
       where: { token },
     });
     if (!user) {
@@ -240,10 +240,10 @@ export class UserModel {
         message: 'El token ha vencído',
       };
     }
-    const userUpdated = await prisma.user.update({
+    const userUpdated = await prisma.users.update({
       where: { id: user.id },
       data: {
-        active: true,
+        status: true,
         token: null,
       },
     });
@@ -253,7 +253,7 @@ export class UserModel {
   }
 
   async getUserByEmail(email: string) {
-    return await prisma.user.findUnique({
+    return await prisma.users.findUnique({
       where: { email },
     });
   }
