@@ -1,4 +1,4 @@
-import { PrismaClient, UserHasRoute } from "@prisma/client";
+import { PrismaClient, userHasRoute } from "@prisma/client";
 import { z, ZodError } from "zod";
 
 const prisma = new PrismaClient();
@@ -18,7 +18,7 @@ export class UserHasRouteModel {
         return await prisma.userHasRoute.findUnique({ where: { id } });
     }
 
-    async create(data: UserHasRoute) {
+    async create(data: userHasRoute) {
         try {
             userHasRouteSchema.parse(data);
             return await prisma.userHasRoute.create({ data });
@@ -26,7 +26,7 @@ export class UserHasRouteModel {
             return this.handleZodError(error);
         }
     }
-    async update(id: number, data: UserHasRoute) {
+    async update(id: number, data: userHasRoute) {
         try {
             userHasRouteSchema.parse(data);
             return await prisma.userHasRoute.update({ where: { id }, data });
