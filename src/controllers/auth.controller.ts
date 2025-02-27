@@ -29,7 +29,7 @@ export const facebookAuth = async (req: Request, res: Response): Promise<void> =
     }
     let user = await userModel.getUserByEmail(email);
     if (!user) {
-      user = await prisma.user.create({
+      user = await prisma.users.create({
         data: {
           // idFacebook: id,
           name,
@@ -38,15 +38,15 @@ export const facebookAuth = async (req: Request, res: Response): Promise<void> =
           password: '',
           tel: '',
           birthday: 0,
-          type: 'COMMON',
-          active: true,
+          type: 'Common',
+          status: true,
           token: null,
         },
       });
     } else {
-      await prisma.user.update({
+      await prisma.users.update({
         where: { email },
-        data: { active: true },
+        data: { status: true },
       });
     }
 

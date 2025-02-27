@@ -29,15 +29,11 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
         // Determinar la tabla y el campo de imagen a actualizar
         switch (tableName) {
             case "User":
-                table = prisma.user;
-                imageField = "image";
+                table = prisma.users;
+                imageField = "url_image";
                 break;
             case "Business":
-                table = prisma.business;
-                imageField = "url_logo";
-                break;
-            case "Content":
-                table = prisma.content;
+                table = prisma.businesses;
                 imageField = "url_logo";
                 break;
             default:
