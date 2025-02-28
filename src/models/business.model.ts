@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const businessSchema = z.object({
     ownerId: z.number().int().min(1, "Campo requerido."),
     name: z.string().min(1, "Campo requerido."),
-    description : z.string().min(1, "Campo requerido."),
+    description: z.string().min(1, "Campo requerido."),
     category: z.string().min(1, "Campo requerido."),
     address: z.string().min(1, "Campo requerido."),
     tel: z.string().min(1, "Campo requerido."),
@@ -15,7 +15,7 @@ const businessSchema = z.object({
 });
 
 export class BusinessModel {
-    async getAllBusinesses(filter?:  CategoryType) {
+    async getAllBusinesses(filter?: CategoryType) {
         if (filter) {
             return await prisma.businesses.findMany({
                 where: {
@@ -80,5 +80,14 @@ export class BusinessModel {
 
         await prisma.businesses.delete({ where: { id } });
         return { message: "Negocio eliminado correctamente." };
+    }
+
+    async getPublicBusinesses() {
+        return await prisma.businesses.findMany({
+            where: {
+                status: true
+            },
+            take: 6
+        });
     }
 }

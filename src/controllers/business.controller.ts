@@ -130,3 +130,16 @@ export const deleteBusiness = async (
     next(error);
   }
 };
+
+export const getPublicBusinesses = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const businesses = await businessModel.getPublicBusinesses();
+    res.status(200).json(businesses);
+  } catch (error) {
+    next(error);
+  }
+}
