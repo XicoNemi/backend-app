@@ -6,6 +6,7 @@ import {
   getUser,
   updateUser,
   partialUpdateUser,
+  createUserBySuperAdmin,
 } from '../controllers/user.controller';
 
 import { verifyToken } from '../middleware/verifyToken';
@@ -24,9 +25,16 @@ router.get('/profile', verifyToken, (req, res) => {
   res.json({ message: 'Profile user', user: req.user });
 });
 
-router.get('/admin', verifyToken, authorizeRole(['ADMIN']), (req, res) => {
+router.get('/admin', verifyToken, authorizeRole(['SuperAdmin']), (req, res) => {
   res.json({ message: 'Dashboard admin', user: req.user });
 });
+
+router.post(
+  '/super-admin',
+  verifyToken,
+  authorizeRole(['SuperAdmin']),
+  createUserBySuperAdmin
+);
 
 /**
  * @swagger
@@ -43,7 +51,7 @@ router.get('/admin', verifyToken, authorizeRole(['ADMIN']), (req, res) => {
  *       401:
  *         description: No autorizado. Token inválido o no proporcionado
  */
-router.get('/', verifyToken, getAllUsers);
+router.get('/', verifyToken, authorizeRole(['SuperAdmin']), getAllUsers);
 router.get('/:id', verifyToken, getUser);
 router.put('/:id', verifyToken, updateUser);
 router.patch('/:id', verifyToken, partialUpdateUser);

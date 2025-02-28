@@ -38,25 +38,72 @@ export class UserModel {
       userSchema.parse(data);
     } catch (error) {
       if (error instanceof ZodError) {
-        throw new AppError(error.errors.map((e) => e.message).join(', '), 400);
+        const errorDetails = error.errors.map((e) => ({
+          field: e.path.join('.'),
+          message: e.message,
+        }));
+        throw new AppError('Validation failed', 400, errorDetails);
       }
-      throw new AppError('Error desconocido en validación', 400);
+      throw new AppError('Unknown validation error', 400);
     }
 
-    const isExist = await prisma.users.findUnique({ where: { email: data.email } });
-    if (isExist) {
-      throw new AppError('El correo ya existe.', 409);
+    try {
+      const isExist = await prisma.users.findUnique({ where: { email: data.email } });
+      if (isExist) {
+        throw new AppError('El correo ya existe.', 409);
+      }
+
+      data.password = await hashPassword(data.password);
+      data.token = generateToken();
+      newAccount(data.name, data.email, data.token);
+
+      const user = await prisma.users.create({ data });
+      return {
+        id: user.id,
+        message: 'Usuario creado correctamente, revisa tu correo.',
+      };
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError('Internal server error', 500);
+    }
+  }
+
+  // ? CREATE USER BY SUPERADMIN
+  async createUserBySuperAdmin(data: Users) {
+    try {
+      userSchema.parse(data);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errorDetails = error.errors.map((e) => ({
+          field: e.path.join('.'),
+          message: e.message,
+        }));
+        throw new AppError('Validation failed', 400, errorDetails);
+      }
+      throw new AppError('Unknown validation error', 400);
     }
 
-    data.password = await hashPassword(data.password);
-    data.token = generateToken();
-    newAccount(data.name, data.email, data.token);
+    try {
+      const isExist = await prisma.users.findUnique({ where: { email: data.email } });
+      if (isExist) {
+        throw new AppError('El correo ya existe.', 409);
+      }
+      data.password = await hashPassword(data.password);
+      data.status = true;
 
-    const user = await prisma.users.create({ data });
-    return {
-      id: user.id,
-      message: 'Usuario creado correctamente, revisa tu correo.',
-    };
+      const user = await prisma.users.create({ data });
+      return {
+        id: user.id,
+        message: 'Usuario creado correctamente',
+      };
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError('Internal server error', 500);
+    }
   }
 
   // ? UPDATE USER

@@ -36,6 +36,15 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
+const createUserBySuperAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await userModel.createUserBySuperAdmin(req.body);
+    res.status(201).json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = parseInt(req.params.id);
@@ -84,4 +93,5 @@ export {
   getUser,
   activeAccount,
   partialUpdateUser,
+  createUserBySuperAdmin,
 };

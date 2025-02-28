@@ -34,7 +34,7 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
                 break;
             case "Business":
                 table = prisma.businesses;
-                imageField = "url_logo";
+                imageField = "url_image";
                 break;
             default:
                 res.status(400).json({ error: "Invalid table name" });
