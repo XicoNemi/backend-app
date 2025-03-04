@@ -8,6 +8,7 @@ import { Request, Response, NextFunction } from 'express';
 // Routes
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
+import routesRoutes from './routes/routes.routes';
 import promotionRoutes from './routes/promotion.route';
 import locationRoutes from './routes/location.route';
 import eventRoutes from './routes/event.routes';
@@ -65,6 +66,7 @@ export class Server {
     this.app.use('/api/itineraries', itineraryRoutes);
     this.app.use('/api/points', pointsRoutes);
     this.app.use('/api/chat', chatRotes);
+    this.app.use('api/routes', routesRoutes)
 
     this.app.use('*', (req, res, next) => {
       next(new AppError('Route not found', 404));

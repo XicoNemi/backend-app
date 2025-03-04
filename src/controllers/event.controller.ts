@@ -48,5 +48,6 @@ export {
     getEventById,
     createEvent,
     updateEvent,
-    deleteEvent
+    deleteEvent,
+    getEventByOwnerId
 }

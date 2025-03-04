@@ -79,7 +79,7 @@ model Events {
   userId            Int
   name              String
   description       String
-  url_image         String
+  url_image         String?
   startDate         Int
   endDate           Int
   status            Boolean             @default(true)
