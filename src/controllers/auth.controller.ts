@@ -11,7 +11,7 @@ import axios from 'axios';
 const userModel = new UserModel();
 const prisma = new PrismaClient();
 
-const client = new OAuth2Client(process.env.CLIENT_ID_ANDROID);
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT);
 
 export const facebookAuth = async (req: Request, res: Response): Promise<void> => {
   const { accessToken } = req.body;
@@ -58,28 +58,49 @@ export const facebookAuth = async (req: Request, res: Response): Promise<void> =
   }
 };
 
-export const googleAuth = async (req: Request, res: Response): Promise<void> => {
+export const googleAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const { tokenId } = req.body;
-
+  console.log(req.body);
   try {
     const ticket = await client.verifyIdToken({
       idToken: tokenId,
-      audience: process.env.CLIENT_ID_ANDROID,
+      audience: process.env.GOOGLE_CLIENT,
     });
 
     const payload = ticket.getPayload();
 
     if (!payload || !payload.email) {
-      res.status(400).json({ error: 'Google authentication failed' });
-      return;
+      return next(new AppError('Google authentication failed', 400));
     }
 
-    const token = await generateToken(11);
+    const superAdmin = await prisma.users.findFirst({
+      where: { type: 'SuperAdmin' },
+    });
 
-    res.json({ token });
+    if (!superAdmin) {
+      return next(new AppError('SuperAdmin not found', 404));
+    }
+
+    if (payload.email !== superAdmin.email) {
+      return next(new AppError('Access denied. You are not an admin.', 403));
+    }
+
+    const user = {
+      id: superAdmin.id,
+      email: superAdmin.email,
+      type: superAdmin.type,
+    };
+
+    const token = generateToken(user);
+
+    res.status(200).json({ user, token });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error with Google authentication' });
+    next(new AppError('Error with Google authentication', 500));
   }
 };
 

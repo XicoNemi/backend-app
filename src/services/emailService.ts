@@ -26,6 +26,7 @@ const loadTemplate = async (templateName: string, data: Record<string, any>) => 
 
 export const newAccount = async (name: string, email: string, token: string) => {
   const verificationUrl = `${url_veritication}${token}`;
+  const redirectUrl = url_mobile;
   const html = await loadTemplate('newAccount', { name, verificationUrl });
   const message = {
     from: 'support@xiconemi.com',
