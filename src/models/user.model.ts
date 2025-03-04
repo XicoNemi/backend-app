@@ -304,4 +304,10 @@ export class UserModel {
       where: { email },
     });
   }
+
+  async getUsersByType(type: any) {
+    const users = await prisma.users.findMany({
+      where:{type}
+    })
+  }
 }

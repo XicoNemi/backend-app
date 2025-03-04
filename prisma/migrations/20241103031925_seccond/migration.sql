@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `user` MODIFY `typeUserId` INTEGER NOT NULL DEFAULT 1;
