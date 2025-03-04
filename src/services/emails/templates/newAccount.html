@@ -44,7 +44,16 @@
     <div class="container">
         <h1>Welcome, {{name}}!</h1>
         <p>Please verify your email by clicking the link below:</p>
-        <a href="{{{verificationUrl}}}">Verify Email</a>
+        <a href="#" id="verify-link">Verify Email</a>
     </div>
+    <script>
+        document.getElementById('verify-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.location.href = '{{{verificationUrl}}}';
+            setTimeout(function() {
+                window.location.href = 'myapp://verification-success';
+            }, 1000);
+        });
+    </script>
 </body>
 </html>

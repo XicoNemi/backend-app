@@ -89,13 +89,13 @@ export const googleAuth = async (
       return next(new AppError('Access denied. You are not an admin.', 403));
     }
 
-    const user = {
-      id: superAdmin.id,
-      email: superAdmin.email,
-      type: superAdmin.type,
-    };
+    const user = await userModel.getUserByEmail(superAdmin.email);
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
 
     const token = generateToken(user);
+    user.password = '';
 
     res.status(200).json({ user, token });
   } catch (error) {
