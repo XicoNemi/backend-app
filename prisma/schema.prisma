@@ -78,13 +78,16 @@ model Events {
   id                Int                 @id @default(autoincrement())
   userId            Int
   name              String
+  description       String
+  url_image         String
   startDate         Int
   endDate           Int
-  status            Boolean             @default(false)
+  status            Boolean             @default(true)
   type              TypeEvent
   pointOfInterest   pointsOfInterest[]
   reviews           reviews[]
   itineraryHasEvent itineraryHasEvent[]
+  businessHasEvent  businessHasEvent[]
 }
 
 //* PUNTO DE INTERES
@@ -96,7 +99,7 @@ model pointsOfInterest {
   locationId    Int
   eventId       Int?
   businessId    Int?
-  status        Boolean         @default(false)
+  status        Boolean         @default(true)
   //* RELATIONS
   location      Location        @relation(fields: [locationId], references: [id], onDelete: Cascade)
   event         Events?         @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -154,22 +157,23 @@ model Routes {
 }
 
 model Businesses {
-  id              Int                @id @default(autoincrement())
-  ownerId         Int
-  name            String
-  description     String
-  url_image       String?
-  category        CategoryType
-  address         String
-  tel             String
-  web_site        String?
-  social_networks Json?
-  status          Boolean            @default(false)
+  id               Int                @id @default(autoincrement())
+  ownerId          Int
+  name             String
+  description      String
+  url_image        String?
+  category         CategoryType
+  address          String
+  tel              String
+  web_site         String?
+  social_networks  Json?
+  status           Boolean            @default(false)
   //* RELATIONS
-  owner           Users              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  pointOfInterest pointsOfInterest[]
-  Promotion       Promotions[]
-  reviews         reviews[]
+  owner            Users              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  pointOfInterest  pointsOfInterest[]
+  Promotion        Promotions[]
+  reviews          reviews[]
+  businessHasEvent businessHasEvent[]
 }
 
 model plans {
@@ -200,6 +204,7 @@ model reviews {
   eventId    Int?
   rating     Decimal     @db.Decimal(2, 1)
   comment    String
+  url_image  String?
   //* RELATIONS
   user       Users       @relation(fields: [userId], references: [id], onDelete: Cascade)
   business   Businesses? @relation(fields: [businessId], references: [id], onDelete: Cascade)
@@ -237,4 +242,14 @@ model routeHasPoint {
   //* RELATIONS
   route   Routes           @relation(fields: [routeId], references: [id], onDelete: Cascade)
   point   pointsOfInterest @relation(fields: [pointId], references: [id], onDelete: Cascade)
+}
+
+model businessHasEvent {
+  id         Int        @id @default(autoincrement())
+  businessId Int
+  eventId    Int
+  status     Boolean    @default(false)
+  //* RELATIONS
+  business   Businesses @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  event      Events     @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }

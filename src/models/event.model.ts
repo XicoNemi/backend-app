@@ -5,7 +5,6 @@ import { z, ZodError } from "zod";
 const prisma = new PrismaClient()
 
 const eventSchema = z.object({
-    userId: z.number().int().min(1, 'Campo requerido.'),
     name: z.string().min(1, 'Campo requerido.'),
     startDate: z.number().min(1, 'Campo requerido.'),
     endDate: z.number().min(1, 'Campo requerido.'),
@@ -86,6 +85,18 @@ export class EventModel {
                 message: 'Evento no encontrado.'
             }
         }
+
+    }
+
+    async getEventsByBusinessId(id: number) {
+        const events = await prisma.businessHasEvent.findMany({
+            where: { businessId: id },
+            include: { event: true }
+        })
+        if (events.length == 0) {
+            return false
+        }
+        return events
 
     }
 }

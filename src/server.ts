@@ -58,7 +58,7 @@ export class Server {
     this.app.use('/api/users', userRoutes);
     this.app.use('/api/auth', authRoutes);
     this.app.use('/api/images', imageRoutes);
-    this.app.use('/api/business', businessRoutes);
+    this.app.use('/api/businesses', businessRoutes);
     this.app.use('/api/promotions', promotionRoutes);
     this.app.use('/api/locations', locationRoutes);
     this.app.use('/api/events', eventRoutes);
