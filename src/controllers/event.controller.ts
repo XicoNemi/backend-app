@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { EventModel } from "../models/event.model";
 
 const eventModel = new EventModel()
@@ -33,10 +33,21 @@ const deleteEvent = async (req: Request, res: Response) => {
     res.json(event).status(200)
 }
 
+const getEventByOwnerId = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { id } = req.params
+    const event = await eventModel.getEventsByBusinessId(Number(id))
+    if (event) {
+        res.json(event).status(200)
+    } else {
+        res.status(404).json({ message: 'No se encontraron eventos.' })
+    }
+}
+
 export {
     getAllEvents,
     getEventById,
     createEvent,
     updateEvent,
-    deleteEvent
+    deleteEvent,
+    getEventByOwnerId
 }

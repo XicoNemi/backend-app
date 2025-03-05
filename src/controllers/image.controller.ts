@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import cloudinary from "../config/cloudinary";
 
@@ -6,10 +6,10 @@ const prisma = new PrismaClient();
 
 export const uploadImage = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { ID, tableName } = req.body;
+        const { tableName, id } = req.params;
 
         // Validar que los datos requeridos estén presentes
-        if (!ID) {
+        if (!id) {
             res.status(400).json({ error: "User ID is required" });
             return;
         }
@@ -24,17 +24,21 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
 
         let table: any = null;
         let idField = "id";
-        let imageField = "image";
+        let imageField = "url_image";
 
         // Determinar la tabla y el campo de imagen a actualizar
         switch (tableName) {
-            case "User":
+            case "Users":
                 table = prisma.users;
-                imageField = "url_image";
                 break;
-            case "Business":
+            case "Businesses":
                 table = prisma.businesses;
-                imageField = "url_image";
+                break;
+            case "Events":
+                table = prisma.events;
+                break;
+            case "pointOfInterest":
+                table = prisma.pointsOfInterest;
                 break;
             default:
                 res.status(400).json({ error: "Invalid table name" });
@@ -43,7 +47,7 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
 
         // Verificar si el registro existe antes de subir la imagen
         const existingRecord = await table.findUnique({
-            where: { [idField]: Number(ID) },
+            where: { [idField]: Number(id) },
             select: { [idField]: true }
         });
 
@@ -67,7 +71,7 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
 
         // Actualizar la imagen en la base de datos
         const updatedRecord = await table.update({
-            where: { [idField]: Number(ID) },
+            where: { [idField]: Number(id) },
             data: { [imageField]: result.secure_url }
         });
 
@@ -81,3 +85,31 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
         res.status(500).json({ error: "Error uploading image" });
     }
 };
+
+
+//* ENTREGABLE
+export const getImagesInBD = async (req: Request, res: Response): Promise<void> => {
+    const data = await prisma.users.findMany({
+        select: {
+            id: true,
+            url_image: true
+        }
+    });
+    res.status(200).json(data);
+}
+
+export const getBusinessImages = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    const data = await prisma.businesses.findMany({
+        select: {
+            id: true,
+            name: true,
+            url_image: true
+        }
+    })
+
+    res.status(200).json(data)
+}
