@@ -51,8 +51,8 @@ enum TypeEvent {
 
 //* USUARIO
 model Users {
-  id             Int             @id @default(autoincrement())
-  subscriptionId Int?
+  id             String          @id @default(uuid())
+  subscriptionId String?
   facebookId     String?
   name           String
   lastname       String
@@ -75,8 +75,8 @@ model Users {
 
 //* EVENTO
 model Events {
-  id                Int                 @id @default(autoincrement())
-  userId            Int
+  id                String              @id @default(uuid())
+  userId            String
   name              String
   description       String
   url_image         String?
@@ -92,13 +92,13 @@ model Events {
 
 //* PUNTO DE INTERES
 model pointsOfInterest {
-  id            Int             @id @default(autoincrement())
+  id            String          @id @default(uuid())
   name          String
   description   String
   url_image     String
-  locationId    Int
-  eventId       Int?
-  businessId    Int?
+  locationId    String
+  eventId       String?
+  businessId    String?
   status        Boolean         @default(true)
   //* RELATIONS
   location      Location        @relation(fields: [locationId], references: [id], onDelete: Cascade)
@@ -109,7 +109,7 @@ model pointsOfInterest {
 
 //* UBICACION
 model Location {
-  id              Int                @id @default(autoincrement())
+  id              String             @id @default(uuid())
   street          String
   lat             Decimal
   lng             Decimal
@@ -118,8 +118,8 @@ model Location {
 
 //* PROMOCION
 model Promotions {
-  id          Int         @id @default(autoincrement())
-  businessId  Int
+  id          String      @id @default(uuid())
+  businessId  String
   name        String
   description String
   status      Boolean     @default(false)
@@ -129,8 +129,8 @@ model Promotions {
 
 //* ITINERARIO
 model Itineraries {
-  id                Int                 @id @default(autoincrement())
-  userId            Int
+  id                String              @id @default(uuid())
+  userId            String
   name              String
   startDate         Int
   endDate           Int
@@ -142,8 +142,8 @@ model Itineraries {
 
 //* RUTAS
 model Routes {
-  id            Int             @id @default(autoincrement())
-  ownerId       Int
+  id            String          @id @default(uuid())
+  ownerId       String
   name          String
   description   String
   stravaData    Json?
@@ -157,8 +157,8 @@ model Routes {
 }
 
 model Businesses {
-  id               Int                @id @default(autoincrement())
-  ownerId          Int
+  id               String             @id @default(uuid())
+  ownerId          String
   name             String
   description      String
   url_image        String?
@@ -177,7 +177,7 @@ model Businesses {
 }
 
 model plans {
-  id            Int             @id @default(autoincrement())
+  id            String          @id @default(uuid())
   name          String
   price         Float
   features      String
@@ -186,9 +186,9 @@ model plans {
 }
 
 model subscriptions {
-  id        Int     @id @default(autoincrement())
-  userId    Int
-  planId    Int
+  id        String  @id @default(uuid())
+  userId    String
+  planId    String
   startDate Int
   endDate   Int
   status    Boolean @default(false)
@@ -198,10 +198,10 @@ model subscriptions {
 }
 
 model reviews {
-  id         Int         @id @default(autoincrement())
-  userId     Int
-  businessId Int?
-  eventId    Int?
+  id         String      @id @default(uuid())
+  userId     String
+  businessId String?
+  eventId    String?
   rating     Decimal     @db.Decimal(2, 1)
   comment    String
   //* RELATIONS
@@ -214,9 +214,9 @@ model reviews {
 
 //* USUARIO TIENE ITINERARIO
 model itineraryHasEvent {
-  id          Int         @id @default(autoincrement())
-  itineraryId Int
-  eventId     Int
+  id          String      @id @default(uuid())
+  itineraryId String
+  eventId     String
   status      Boolean     @default(false)
   //* RELATIONS
   itinerary   Itineraries @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
@@ -224,9 +224,9 @@ model itineraryHasEvent {
 }
 
 model userHasRoute {
-  id      Int     @id @default(autoincrement())
-  userId  Int
-  routeId Int
+  id      String  @id @default(uuid())
+  userId  String
+  routeId String
   status  Boolean @default(false)
   //* RELATIONS
   user    Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -234,9 +234,9 @@ model userHasRoute {
 }
 
 model routeHasPoint {
-  id      Int              @id @default(autoincrement())
-  routeId Int
-  pointId Int
+  id      String           @id @default(uuid())
+  routeId String
+  pointId String
   status  Boolean          @default(false)
   //* RELATIONS
   route   Routes           @relation(fields: [routeId], references: [id], onDelete: Cascade)
@@ -244,9 +244,9 @@ model routeHasPoint {
 }
 
 model businessHasEvent {
-  id         Int        @id @default(autoincrement())
-  businessId Int
-  eventId    Int
+  id         String     @id @default(uuid())
+  businessId String
+  eventId    String
   status     Boolean    @default(false)
   //* RELATIONS
   business   Businesses @relation(fields: [businessId], references: [id], onDelete: Cascade)
