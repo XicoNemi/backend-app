@@ -50,7 +50,7 @@ export const facebookAuth = async (req: Request, res: Response): Promise<void> =
       });
     }
 
-    const token = await generateToken(user.id as number);
+    const token = generateToken(user.id);
     res.json({ token });
   } catch (error) {
     console.error(error);

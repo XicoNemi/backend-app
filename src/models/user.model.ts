@@ -107,7 +107,7 @@ export class UserModel {
   }
 
   // ? UPDATE USER
-  async updateUser(id: number, data: Users) {
+  async updateUser(id: string, data: Users) {
     try {
       userSchema.parse(data);
     } catch (error) {
@@ -159,7 +159,7 @@ export class UserModel {
   }
 
   // ? PARTIAL UPDATE USER
-  async partialUpdateUser(id: number, data: Partial<Users>) {
+  async partialUpdateUser(id: string, data: Partial<Users>) {
     if (Object.keys(data).length === 0) {
       throw new AppError('At least one field must be provided to update', 400);
     }
@@ -220,7 +220,7 @@ export class UserModel {
   }
 
   // ? DELETE USER
-  async deleteUser(id: number) {
+  async deleteUser(id: string) {
     try {
       const isExist = await prisma.users.findUnique({ where: { id } });
       if (!isExist) throw new AppError('User not found', 404);
@@ -256,7 +256,7 @@ export class UserModel {
   }
 
   // ? GET USER
-  async getUser(id: number) {
+  async getUser(id: string) {
     try {
       const user = await prisma.users.findUnique({
         where: { id },

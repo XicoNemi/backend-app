@@ -1,6 +1,7 @@
 import e, { Request, Response, NextFunction } from 'express';
 import { UserModel } from '../models/user.model';
 import { AppError } from '../utils/errorApp';
+import { validate as isUUID } from 'uuid';
 const userModel = new UserModel();
 
 const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
@@ -14,8 +15,8 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
 
 const getUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) throw new AppError('ID is not a number', 400);
+    const id = req.params.id;
+    if (!isUUID(id)) throw new AppError('Invalid UUID format', 400);
     const user = await userModel.getUser(id);
     res.status(200).json(user);
   } catch (error) {
@@ -47,8 +48,8 @@ const createUserBySuperAdmin = async (req: Request, res: Response, next: NextFun
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) throw new AppError('ID is not a number', 400);
+    const id = req.params.id;
+    if (!isUUID(id)) throw new AppError('Invalid UUID format', 400);
 
     const user = await userModel.updateUser(id, req.body);
     res.status(200).json(user);
