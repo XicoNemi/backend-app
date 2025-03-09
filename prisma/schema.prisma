@@ -204,7 +204,6 @@ model reviews {
   eventId    Int?
   rating     Decimal     @db.Decimal(2, 1)
   comment    String
-  url_image  String?
   //* RELATIONS
   user       Users       @relation(fields: [userId], references: [id], onDelete: Cascade)
   business   Businesses? @relation(fields: [businessId], references: [id], onDelete: Cascade)
