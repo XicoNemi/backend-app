@@ -3,6 +3,7 @@ import { BusinessModel } from '../models/business.model';
 import { CategoryType } from '@prisma/client';
 import { AppError } from '../utils/errorApp';
 import { z } from 'zod';
+import { validate as isUUID } from 'uuid';
 
 const businessModel = new BusinessModel();
 
@@ -46,8 +47,9 @@ export const getBusiness = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) throw new AppError('ID inválido', 400);
+    const id = req.params.id;
+    if (!isUUID(id)) throw new AppError('Invalid UUID format', 400);
+    // if (isNaN(id)) throw new AppError('ID inválido', 400);
 
     const business = await businessModel.getBusiness(id);
     res.status(200).json(business);
@@ -90,11 +92,13 @@ export const updateBusiness = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      res.status(400).json({ message: 'ID inválido' });
-      return;
-    }
+    const id = req.params.id;
+    if (!isUUID(id)) throw new AppError('Invalid UUID format', 400);
+
+    // if (isNaN(id)) {
+    //   res.status(400).json({ message: 'ID inválido' });
+    //   return;
+    // }
 
     const data = req.body;
 
@@ -121,8 +125,10 @@ export const deleteBusiness = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) throw new AppError('ID inválido', 400);
+    const id = req.params.id;
+    // if (isNaN(id)) throw new AppError('ID inválido', 400);
+    if (!isUUID(id)) throw new AppError('Invalid UUID format', 400);
+
 
     const business = await businessModel.deleteBusiness(id);
     res.status(200).json(business);

@@ -1,4 +1,4 @@
-import e, { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { UserModel } from '../models/user.model';
 import { AppError } from '../utils/errorApp';
 import { validate as isUUID } from 'uuid';
@@ -60,8 +60,8 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const partialUpdateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) throw new AppError('ID is not a number', 400);
+    const id = req.params.id;
+    if (!isUUID(id)) throw new AppError('Invalid UUID format', 400);
 
     const user = await userModel.partialUpdateUser(id, req.body);
     res.status(200).json(user);
@@ -72,7 +72,8 @@ const partialUpdateUser = async (req: Request, res: Response, next: NextFunction
 
 const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
+    if (!isUUID(id)) throw new AppError('Invalid UUID format', 400);
     const user = await userModel.deleteUser(id);
     res.status(200).json(user);
   } catch (error) {
