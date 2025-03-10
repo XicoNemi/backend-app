@@ -20,7 +20,7 @@ export class PointModel{
         return points;
     }
 
-    async getPointById(id: number){
+    async getPointById(id: string){
         const point = await prisma.pointsOfInterest.findUnique({where: {id}});
         if(!point){
             return {
@@ -47,7 +47,7 @@ export class PointModel{
         }
     }
 
-    async updatePoint(id: number, data: pointsOfInterest){
+    async updatePoint(id: string, data: pointsOfInterest){
         try{
             pointOfInterestSchema.parse(data);
         }catch(error){
@@ -64,7 +64,7 @@ export class PointModel{
         }
     }
 
-    async deletePoint(id: number){
+    async deletePoint(id: string){
         try {
             const point = await prisma.pointsOfInterest.findUnique({where: {id}});
             if(!point){

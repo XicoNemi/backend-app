@@ -4,7 +4,7 @@ import { z, ZodError } from "zod";
 const prisma = new PrismaClient();
 
 const businessSchema = z.object({
-    ownerId: z.number().int().min(1, "Campo requerido."),
+    ownerId: z.string().min(1, "Campo requerido."),
     name: z.string().min(1, "Campo requerido."),
     description: z.string().min(1, "Campo requerido."),
     category: z.string().min(1, "Campo requerido."),
@@ -26,7 +26,7 @@ export class BusinessModel {
         return await prisma.businesses.findMany();
     }
 
-    async getBusiness(id: number) {
+    async getBusiness(id: string) {
         const business = await prisma.businesses.findUnique({ where: { id } });
         if (!business) {
             return { message: "Negocio no encontrado." };
@@ -53,7 +53,7 @@ export class BusinessModel {
         return { id: business.id, message: "Negocio creado correctamente." };
     }
 
-    async updateBusiness(id: number, data: Businesses) {
+    async updateBusiness(id: string, data: Businesses) {
         try {
             businessSchema.parse(data);
         } catch (error) {
@@ -72,7 +72,7 @@ export class BusinessModel {
         return { message: "Negocio actualizado correctamente." };
     }
 
-    async deleteBusiness(id: number) {
+    async deleteBusiness(id: string) {
         const isExist = await prisma.businesses.findUnique({ where: { id } });
         if (!isExist) {
             return { message: "Negocio no encontrado." };

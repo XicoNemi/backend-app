@@ -4,7 +4,7 @@ import { z, ZodError } from "zod";
 const prisma = new PrismaClient();
 
 const eventSchema = z.object({
-    userId: z.number().min(1, 'Campo requerido.'),
+    userId: z.string().min(1, 'Campo requerido.'),
     businessId: z.number().min(1, 'Campo requerido.'),
     name: z.string().min(1, 'Campo requerido.'),
     description: z.string().min(1, 'Campo requerido.'),
@@ -23,7 +23,7 @@ export class EventModel {
         return events;
     }
 
-    async getEventById(id: number) {
+    async getEventById(id: string) {
         const event = await prisma.events.findUnique({ where: { id } });
         if (!event) {
             return {
@@ -33,7 +33,7 @@ export class EventModel {
         return event;
     }
 
-    async createEvent(data: Omit<Events, 'id'> & { businessId: number }) {
+    async createEvent(data: Omit<Events, 'id'> & { businessId: string }) {
         try {
             eventSchema.parse(data);
         } catch (error) {
@@ -69,7 +69,7 @@ export class EventModel {
         }
     }
 
-    async updateEvent(id: number, data: Events) {
+    async updateEvent(id: string, data: Events) {
         try {
             eventSchema.parse(data);
         } catch (error) {
@@ -87,7 +87,7 @@ export class EventModel {
         };
     }
 
-    async deleteEvent(id: number) {
+    async deleteEvent(id: string) {
         try {
             const event = await prisma.events.findUnique({ where: { id } });
             if (!event) {
@@ -106,7 +106,7 @@ export class EventModel {
         }
     }
 
-    async getEventsByBusinessId(id: number) {
+    async getEventsByBusinessId(id: string) {
         const events = await prisma.businessHasEvent.findMany({
             where: { businessId: id },
             include: { event: true }

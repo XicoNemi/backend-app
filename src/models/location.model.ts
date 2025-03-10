@@ -18,7 +18,7 @@ export class LocationModel {
         return locations;
     }
 
-    async getLocationById(id: number) {
+    async getLocationById(id: string) {
         const location = await prisma.location.findUnique({ where: { id } });
         if(!location) {
             return {
@@ -46,7 +46,7 @@ export class LocationModel {
         };
     }
 
-    async updateLocation(id: number, data: Location) {
+    async updateLocation(id: string, data: Location) {
         try {
             locationSchema.parse(data);
         } catch (error) {
@@ -73,7 +73,7 @@ export class LocationModel {
     }
     
 
-    async deleteLocation(id: number) {
+    async deleteLocation(id: string) {
         try {
             const location = await prisma.location.delete({ where: { id } })
             return {

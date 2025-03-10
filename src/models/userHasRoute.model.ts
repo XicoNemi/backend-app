@@ -14,7 +14,7 @@ export class UserHasRouteModel {
         return await prisma.userHasRoute.findMany();
     }
 
-    async getById(id: number) {
+    async getById(id: string) {
         return await prisma.userHasRoute.findUnique({ where: { id } });
     }
 
@@ -26,7 +26,7 @@ export class UserHasRouteModel {
             return this.handleZodError(error);
         }
     }
-    async update(id: number, data: userHasRoute) {
+    async update(id: string, data: userHasRoute) {
         try {
             userHasRouteSchema.parse(data);
             return await prisma.userHasRoute.update({ where: { id }, data });
@@ -35,7 +35,7 @@ export class UserHasRouteModel {
         }
     }
 
-    async delete(id: number) {
+    async delete(id: string) {
         return await prisma.userHasRoute.delete({ where: { id } });
     }
 

@@ -3,7 +3,7 @@ import { PrismaClient, Promotions } from "@prisma/client";
 
 const prisma = new PrismaClient()
 const promotionSchema = z.object({
-    businessId: z.number().int().positive("El id del negocio debe ser un número positivo."),
+    businessId: z.string().min(1, "El id del negocio debe tener un UUID ."),
     name: z.string().min(1, "Campo requerido."),
     description: z.string().min(1, "Campo requerido."),
     status: z.boolean()
@@ -21,7 +21,7 @@ export class PromotionModel {
     }
 
 
-    async getPromotionById(id: number) {
+    async getPromotionById(id: string) {
         const promotion = await prisma.promotions.findUnique({
             where: { id: id }
         });
@@ -51,7 +51,7 @@ export class PromotionModel {
         };
     }
 
-    async updatePromotion(id: number, data: Promotions) {
+    async updatePromotion(id: string, data: Promotions) {
         try {
             promotionSchema.parse(data);
         } catch (error) {
@@ -77,7 +77,7 @@ export class PromotionModel {
         };
     }
 
-    async deletePromotion(id: number) {
+    async deletePromotion(id: string) {
         const isExist = await prisma.promotions.findUnique({ where: { id: id } });
         if (!isExist) {
             return {

@@ -4,7 +4,7 @@ import { z, ZodError } from "zod";
 const prisma = new PrismaClient()
 
 const itinerarySchema = z.object({
-    userId: z.number().int().positive("El id del usuario debe ser un número positivo."),
+    userId: z.string().min(1, "El id del usuario debe ser un UUID válido."),
     name: z.string().min(1, "Campo requerido."),
     startDate: z.number().int().positive("Fecha en formato unix."),
     endDate: z.number().int().positive("Fecha en formato unix."),
@@ -22,7 +22,7 @@ export class ItineraryModel {
         return itineraries
     }
 
-    async getItineraryById(id: number) {
+    async getItineraryById(id: string) {
         const itinerary = await prisma.itineraries.findUnique({ where: { id } })
         if (!itinerary) {
             return {
@@ -50,7 +50,7 @@ export class ItineraryModel {
         }
     }
 
-    async updateItinerary(id: number, data: Itineraries) {
+    async updateItinerary(id: string, data: Itineraries) {
         try {
             itinerarySchema.parse(data)
         } catch (error) {
@@ -74,7 +74,7 @@ export class ItineraryModel {
         }
     }
 
-    async deleteItinerary(id: number) {
+    async deleteItinerary(id: string) {
         try {
             const itinerary = await prisma.itineraries.findUnique({ where: { id } })
             if (!itinerary) {

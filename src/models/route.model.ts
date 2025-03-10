@@ -4,7 +4,7 @@ import { z, ZodError } from "zod";
 const prisma = new PrismaClient();
 
 const routeSchema = z.object({
-    ownerId: z.number().int().min(1, "Campo requerido."),
+    ownerId: z.string().min(1, "Campo requerido."),
     name: z.string().min(1, "Campo requerido."),
     description: z.string().min(1, "Campo requerido."),
     stravaData: z.any().optional(),

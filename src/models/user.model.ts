@@ -307,7 +307,7 @@ export class UserModel {
 
   async getUsersByType(type: any) {
     const users = await prisma.users.findMany({
-      where:{type}
+      where: { type }
     })
   }
 }
