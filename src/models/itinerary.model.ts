@@ -1,5 +1,6 @@
 import { Itineraries, PrismaClient } from "@prisma/client";
 import { z, ZodError } from "zod";
+import { AppError } from "../utils/errorApp";
 
 const prisma = new PrismaClient()
 
@@ -32,7 +33,7 @@ export class ItineraryModel {
         return itinerary
     }
 
-    async createItinerary(data: Itineraries) {
+    async createItinerary(data: Omit<Itineraries, 'id'> & { eventId: string }) {
         try {
             itinerarySchema.parse(data)
         } catch (error) {
@@ -44,6 +45,16 @@ export class ItineraryModel {
         }
 
         const itinerary = await prisma.itineraries.create({ data })
+        if (data.eventId) {
+            const isExist = await prisma.events.findUnique({ where: { id: data.eventId } })
+            if (!isExist) throw new AppError('Evento no encontrado.', 404)
+            await prisma.itineraryHasEvent.create({
+                data: {
+                    eventId: data.eventId,
+                    itineraryId: itinerary.id
+                }
+            })
+        }
         return {
             id: itinerary.id,
             message: 'Itinerario creado correctamente.'
