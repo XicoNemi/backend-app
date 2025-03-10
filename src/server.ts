@@ -27,6 +27,7 @@ import { Server as SocketServer, Socket } from 'socket.io';
 import { MessageModel } from './models/chat.model';
 import { connectToMongoDB } from './config/nosqlDataBase';
 import chatRotes from './routes/chat.routes';
+import plansRoutes from './routes/plan.routes';
 
 export class Server {
   private app: express.Express;
@@ -67,6 +68,7 @@ export class Server {
     this.app.use('/api/points', pointsRoutes);
     this.app.use('/api/chat', chatRotes);
     this.app.use('api/routes', routesRoutes)
+    this.app.use('/api/plans', plansRoutes)
 
     this.app.use('*', (req, res, next) => {
       next(new AppError('Route not found', 404));
