@@ -22,15 +22,21 @@ export const getAllBusinesses = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    let filter = req.query.type as string | undefined;
+    // if (!req.user || !req.user.userId) {
+    //   res.status(400).json({ message: 'User not found' });
+    // }
+    const ownerId = req.user?.userId;
+    const typeUser = req.user?.type;
+    // let filter = req.query.type as string | undefined;
 
-    if (filter) {
-      filter = filter.toUpperCase(); // Convertir a MAYÚSCULAS
-      categoryEnum.parse(filter); // Validar con Zod
-    }
+    // if (filter) {
+    //   filter = filter.toUpperCase(); // Convertir a MAYÚSCULAS
+    //   categoryEnum.parse(filter); // Validar con Zod
+    // }
 
-    const businesses = await businessModel.getAllBusinesses(filter as CategoryType);
-    res.status(200).json(businesses);
+    // const businesses = await businessModel.getAllBusinesses(filter as CategoryType);
+    const business = await businessModel.getAllBusinesses(ownerId, typeUser);
+    res.status(200).json(business);
   } catch (error) {
     if (error instanceof z.ZodError) {
       res.status(400).json({ message: 'Categoría inválida', errors: error.errors });
@@ -142,4 +148,4 @@ export const getPublicBusinesses = async (
   } catch (error) {
     next(error);
   }
-}
+};
