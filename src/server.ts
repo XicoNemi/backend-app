@@ -14,6 +14,7 @@ import locationRoutes from './routes/location.route';
 import eventRoutes from './routes/event.routes';
 import itineraryRoutes from './routes/itinerary.routes';
 import pointsRoutes from './routes/pointOfInterest.routes';
+import statsRouter from './routes/stats.routes';
 import errorHandler from './middleware/errorHandler';
 import { connectToPostgres } from './config/sqlDataBase';
 import { setupSwagger } from './config/swagger';
@@ -69,6 +70,7 @@ export class Server {
     this.app.use('/api/chat', chatRotes);
     this.app.use('api/routes', routesRoutes)
     this.app.use('/api/plans', plansRoutes)
+    this.app.use('/api/stats', statsRouter);
 
     this.app.use('*', (req, res, next) => {
       next(new AppError('Route not found', 404));

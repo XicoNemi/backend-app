@@ -219,8 +219,8 @@ export class UserModel {
     }
   }
 
-  // async changePassword(id: number, data: ) {  
-    
+  // async changePassword(id: number, data: ) {
+
   // }
 
   // ? DELETE USER
@@ -311,7 +311,25 @@ export class UserModel {
 
   async getUsersByType(type: any) {
     const users = await prisma.users.findMany({
-      where: { type }
-    })
+      where: { type },
+    });
+  }
+
+  async getUserStats() {
+    const totalUsers = await prisma.users.count();
+    const genderStats = await prisma.users.groupBy({
+      by: ['gender'],
+      _count: {
+        gender: true,
+      },
+    });
+
+    const stats = genderStats.map((stat) => ({
+      gender: stat.gender,
+      count: stat._count.gender,
+      percentage: (stat._count.gender / totalUsers) * 100,
+    }));
+
+    return stats;
   }
 }
