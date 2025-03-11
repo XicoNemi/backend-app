@@ -2,12 +2,12 @@ import { PrismaClient } from '@prisma/client';
 import { loggerXiconemi } from '../utils/colorLogs';
 const prisma = new PrismaClient();
 
-export async function connectToMysql() {
+export async function connectToPostgres() {
   try {
     await prisma.$connect();
-    loggerXiconemi('green', 'Connected to MySQL database', 'mysql');
+    loggerXiconemi('green', 'Connected to Postgres database', 'mysql');
   } catch (error) {
-    loggerXiconemi('red', 'Error connecting to MySQL database', 'error');
+    loggerXiconemi('red', 'Error connecting to Postgres database', 'error');
   }
 }
 

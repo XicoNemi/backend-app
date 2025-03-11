@@ -15,7 +15,7 @@ import eventRoutes from './routes/event.routes';
 import itineraryRoutes from './routes/itinerary.routes';
 import pointsRoutes from './routes/pointOfInterest.routes';
 import errorHandler from './middleware/errorHandler';
-import { connectToMysql } from './config/sqlDataBase';
+import { connectToPostgres } from './config/sqlDataBase';
 import { setupSwagger } from './config/swagger';
 import imageRoutes from './routes/image.routes';
 import businessRoutes from './routes/business.routes';
@@ -138,7 +138,7 @@ export class Server {
     this.app.listen(this.app.get('port'), async () => {
       loggerXiconemi('cyan', `Server running on port ${this.app.get('port')}`, 'success');
 
-      await connectToMysql();
+      await connectToPostgres();
       await connectToMongoDB();
     });
   }
