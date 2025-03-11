@@ -70,6 +70,16 @@ const partialUpdateUser = async (req: Request, res: Response, next: NextFunction
   }
 };
 
+// const changePassword = async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const id = parseInt(req.params.id);
+//     const user = await userModel.changePassword(id, req.body);
+//     res.status(200).json(user);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;

@@ -219,6 +219,10 @@ export class UserModel {
     }
   }
 
+  // async changePassword(id: number, data: ) {  
+    
+  // }
+
   // ? DELETE USER
   async deleteUser(id: string) {
     try {

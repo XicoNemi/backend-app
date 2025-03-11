@@ -55,6 +55,7 @@ router.get('/', verifyToken, authorizeRole(['SuperAdmin']), getAllUsers);
 router.get('/:id', verifyToken, getUser);
 router.put('/:id', verifyToken, updateUser);
 router.patch('/:id', verifyToken, partialUpdateUser);
+router.patch('/change-password/:id', verifyToken, partialUpdateUser);
 router.delete('/delete/:id', verifyToken, deleteUser);
 
 router.get('/verify-email/:token', activeAccount);

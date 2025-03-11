@@ -15,15 +15,39 @@ const businessSchema = z.object({
 });
 
 export class BusinessModel {
-    async getAllBusinesses(filter?: CategoryType) {
-        if (filter) {
-            return await prisma.businesses.findMany({
+    // async getAllBusinesses(filter?: CategoryType) {
+    //     if (filter) {
+    //         return await prisma.businesses.findMany({
+    //             where: {
+    //                 category: filter
+    //             }
+    //         })
+    //     }
+    //     return await prisma.businesses.findMany();
+    // }
+    async getAllBusinesses(ownerId?: number, typeUser?: string) {
+        if (typeUser === 'SuperAdmin') {
+            const businesses = await prisma.businesses.findMany();
+            if (businesses.length == 0) {
+                return { message: "No hay negocios disponibles." };
+            }
+            return businesses;
+        } else if (ownerId) {
+            const username = await prisma.users.findUnique({ where: { id: ownerId } });
+    
+            const businesses = await prisma.businesses.findMany({
                 where: {
-                    category: filter
+                    ownerId: ownerId
                 }
-            })
+            });
+    
+            if (businesses.length == 0) {
+                return { message: "No hay negocios asociados al usuario " + username?.name };
+            }
+            return businesses;
+        } else {
+            return { message: "No se proporcionó un ownerId válido." };
         }
-        return await prisma.businesses.findMany();
     }
 
     async getBusiness(id: string) {
