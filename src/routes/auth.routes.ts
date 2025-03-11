@@ -5,6 +5,7 @@ import {
   googleAuth,
   facebookAuth,
   deleteUserByEmail,
+  changePassword,
 } from '../controllers/auth.controller';
 import signInLimiter from '../services/rateLimitService';
 
@@ -115,5 +116,7 @@ router.post('/sign-in', signInLimiter, signIn);
  *         description: Usuario no encontrado
  */
 router.delete('/delete-user/:email', deleteUserByEmail);
+
+router.patch('/change-password/:id', changePassword);
 
 export default router;

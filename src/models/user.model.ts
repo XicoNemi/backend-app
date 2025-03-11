@@ -219,9 +219,14 @@ export class UserModel {
     }
   }
 
-  // async changePassword(id: number, data: ) {
+  // ? UPDATE PASSWORD
 
-  // }
+  async updatePassword(id: string, hashedPassword: string): Promise<void> {
+    await prisma.users.update({
+      where: { id },
+      data: { password: hashedPassword },
+    });
+  }
 
   // ? DELETE USER
   async deleteUser(id: string) {
@@ -314,6 +319,8 @@ export class UserModel {
       where: { type },
     });
   }
+
+  async changePassword(id: string, data: any) {}
 
   async getUserStats() {
     const totalUsers = await prisma.users.count();

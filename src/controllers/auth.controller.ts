@@ -1,11 +1,12 @@
 // auth.controller.ts
-import { NextFunction, Request, Response } from 'express';
+import e, { NextFunction, Request, Response } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import { UserModel } from '../models/user.model';
 import { generateToken } from '../services/auth.service';
-import { comparePassword } from '../utils/bcrypt';
+import { comparePassword, hashPassword } from '../utils/bcrypt';
 import { PrismaClient } from '@prisma/client';
 import { AppError } from '../utils/errorApp';
+import { validate as IsUUID } from 'uuid';
 import axios from 'axios';
 
 const userModel = new UserModel();
@@ -143,8 +144,55 @@ export const signIn = async (
   }
 };
 
-export const deleteUserByEmail = async (req: Request, res: Response) => {
-  const email = req.params.email;
-  const user = await userModel.deleteByEmail(email);
-  res.json(user).status(200);
+export const deleteUserByEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const email = req.params.email;
+    const user = await userModel.deleteByEmail(email);
+    res.json(user).status(200);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changePassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { oldPassword, newPassword, repeatPassword } = req.body;
+
+    if (!IsUUID(id)) throw new AppError('Invalid UUID format', 400);
+
+    if (!oldPassword || !newPassword || !repeatPassword) {
+      throw new AppError(
+        'All fields (oldPassword, newPassword, repeatPassword) are required',
+        400
+      );
+    }
+
+    if (newPassword !== repeatPassword) {
+      throw new AppError('New passwords do not match', 400);
+    }
+
+    if (newPassword.length < 9) {
+      throw new AppError('New password must be at least 8 characters long', 400);
+    }
+
+    const user = await userModel.getUser(id);
+    if (!user) throw new AppError('User not found', 404);
+
+    const isPasswordValid: boolean = await comparePassword(oldPassword, user.password);
+    if (!isPasswordValid) throw new AppError('Wrong password', 400);
+
+    const hashedPassword = await hashPassword(newPassword);
+    console.log(newPassword, oldPassword);
+    
+    await userModel.updatePassword(id, hashedPassword);
+
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (error) {
+    next(error);
+  }
 };
