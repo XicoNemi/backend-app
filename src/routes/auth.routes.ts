@@ -6,8 +6,9 @@ import {
   facebookAuth,
   deleteUserByEmail,
   changePassword,
-} from '../controllers/auth.controller';
-import signInLimiter from '../services/rateLimitService';
+} from '../controllers/admin/auth.controller';
+import { signInCommon } from '../controllers/common/auth.controller';
+// import signInLimiter from '../services/rateLimitService';
 
 const router: Router = Router();
 
@@ -88,7 +89,8 @@ router.post('/sign-up', signUp);
  *         description: Error en la validación de los datos
  */
 
-router.post('/sign-in', signInLimiter, signIn);
+router.post('/sign-in', signIn);
+router.post('/sign-in-common', signInCommon)
 
 /**
  * @swagger

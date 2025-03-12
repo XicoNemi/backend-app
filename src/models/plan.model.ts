@@ -1,4 +1,4 @@
-import { PrismaClient, plans } from "@prisma/client";
+import { PrismaClient, Plans } from "@prisma/client";
 import { z, ZodError } from "zod";
 import { AppError } from "../utils/errorApp";
 
@@ -15,11 +15,12 @@ export class PlanModel {
     // ? GET ALL PLANS
     async getAllPlans() {
         const plans = await prisma.plans.findMany();
+        if (!plans?.length) throw new AppError("No hay planes registrados.",404);
         return plans;
     }
 
     // ? CREATE PLAN
-    async createPlan(data: plans) {
+    async createPlan(data: Plans) {
         try {
             planSchema.parse(data);
         } catch (error) {
@@ -40,7 +41,10 @@ export class PlanModel {
             }
 
             const plan = await prisma.plans.create({ data });
-            return plan;
+            return {
+                message: "Plan creado correctamente.",
+                planId: plan.id,
+            };
         } catch (error) {
             throw new AppError("Error al crear el plan.", 500);
         }
@@ -57,7 +61,7 @@ export class PlanModel {
     }
 
     // ? UPDATE PLAN
-    async updatePlan(id: string, data: plans) {
+    async updatePlan(id: string, data: Plans) {
         try {
             planSchema.parse(data);
         } catch (error) {
@@ -73,7 +77,10 @@ export class PlanModel {
 
         try {
             const plan = await prisma.plans.update({ where: { id }, data });
-            return plan;
+            return {
+                message: "Plan actualizado correctamente.",
+                planId: plan.id
+            };
         } catch (error) {
             throw new AppError("Error al actualizar el plan.", 500);
         }

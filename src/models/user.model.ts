@@ -28,7 +28,9 @@ const userSchema = z.object({
 export class UserModel {
   // ? GET ALL USERS
   async getAllUsers() {
-    const users = await prisma.users.findMany();
+    const users = await prisma.users.findMany({
+      orderBy: { type: 'desc' },
+    });
     return users;
   }
 

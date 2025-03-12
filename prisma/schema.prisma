@@ -68,8 +68,8 @@ model Users {
   Route          Routes[]
   Itinerary      Itineraries[]
   Businesses     Businesses[]
-  subscriptions  subscriptions[]
-  reviews        reviews[]
+  subscriptions  Subscriptions[]
+  reviews        Reviews[]
   userHasRoute   userHasRoute[]
 }
 
@@ -85,7 +85,7 @@ model Events {
   status            Boolean             @default(true)
   type              TypeEvent
   pointOfInterest   pointsOfInterest[]
-  reviews           reviews[]
+  reviews           Reviews[]
   itineraryHasEvent itineraryHasEvent[]
   businessHasEvent  businessHasEvent[]
 }
@@ -143,7 +143,7 @@ model Itineraries {
 //* RUTAS
 model Routes {
   id            String          @id @default(uuid())
-  ownerId       String
+  ownerId       String?
   name          String
   description   String
   stravaData    Json?
@@ -151,7 +151,7 @@ model Routes {
   time          Int?
   status        Boolean         @default(false)
   //* RELATIONS
-  owner         Users           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner         Users?          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   userHasRoute  userHasRoute[]
   routeHasPoint routeHasPoint[]
 }
@@ -172,20 +172,20 @@ model Businesses {
   owner            Users              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   pointOfInterest  pointsOfInterest[]
   Promotion        Promotions[]
-  reviews          reviews[]
+  reviews          Reviews[]
   businessHasEvent businessHasEvent[]
 }
 
-model plans {
+model Plans {
   id            String          @id @default(uuid())
   name          String
   price         Float
   features      String
   status        Boolean         @default(false)
-  subscriptions subscriptions[]
+  subscriptions Subscriptions[]
 }
 
-model subscriptions {
+model Subscriptions {
   id        String  @id @default(uuid())
   userId    String
   planId    String
@@ -194,16 +194,16 @@ model subscriptions {
   status    Boolean @default(false)
   //* RELATIONS
   user      Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan      plans   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  plan      Plans   @relation(fields: [planId], references: [id], onDelete: Cascade)
 }
 
-model reviews {
+model Reviews {
   id         String      @id @default(uuid())
   userId     String
   businessId String?
   eventId    String?
   rating     Decimal     @db.Decimal(2, 1)
-  comment    String
+  comment    String?
   //* RELATIONS
   user       Users       @relation(fields: [userId], references: [id], onDelete: Cascade)
   business   Businesses? @relation(fields: [businessId], references: [id], onDelete: Cascade)

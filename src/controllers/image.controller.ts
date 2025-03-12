@@ -37,7 +37,7 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
             case "Events":
                 table = prisma.events;
                 break;
-            case "pointOfInterest":
+            case "pointsOfInterest":
                 table = prisma.pointsOfInterest;
                 break;
             default:

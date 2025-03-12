@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 const eventSchema = z.object({
     userId: z.string().min(1, 'Campo requerido.'),
-    businessId: z.number().min(1, 'Campo requerido.'),
+    businessId: z.string().min(1, 'Campo requerido.'),
     name: z.string().min(1, 'Campo requerido.'),
     description: z.string().min(1, 'Campo requerido.'),
     startDate: z.number().min(1, 'Campo requerido.'),

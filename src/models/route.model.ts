@@ -4,7 +4,7 @@ import { z, ZodError } from "zod";
 const prisma = new PrismaClient();
 
 const routeSchema = z.object({
-    ownerId: z.string().min(1, "Campo requerido."),
+    ownerId: z.string().min(1, "Campo requerido.").optional(),
     name: z.string().min(1, "Campo requerido."),
     description: z.string().min(1, "Campo requerido."),
     stravaData: z.any().optional(),
@@ -17,7 +17,7 @@ export class RoutesModel {
     async getAllRoutes() {
         try {
             const routes = await prisma.routes.findMany();
-            if(routes.length === 0) {
+            if (routes.length === 0) {
                 return { message: "No hay rutas." };
             }
             return routes;
@@ -27,7 +27,7 @@ export class RoutesModel {
         }
     }
 
-    async  createRoute(data: Routes) {
+    async createRoute(data: Routes) {
         try {
             routeSchema.parse(data);
         } catch (error) {

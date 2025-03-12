@@ -1,34 +1,31 @@
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
+// ? Core modules
 import fs from 'node:fs';
 import path from 'node:path';
-import { loggerXiconemi } from './utils/colorLogs';
-import { Request, Response, NextFunction } from 'express';
-// Routes
-import userRoutes from './routes/user.routes';
-import authRoutes from './routes/auth.routes';
-import routesRoutes from './routes/routes.routes';
-import promotionRoutes from './routes/promotion.route';
-import locationRoutes from './routes/location.route';
-import eventRoutes from './routes/event.routes';
-import itineraryRoutes from './routes/itinerary.routes';
-import pointsRoutes from './routes/pointOfInterest.routes';
-import statsRouter from './routes/stats.routes';
-import errorHandler from './middleware/errorHandler';
+import { createServer } from 'http';
+
+// ? Third-party libraries
+import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import { Server as SocketServer, Socket } from 'socket.io';
+
+// ? Configurations
 import { connectToPostgres } from './config/sqlDataBase';
+import { connectToMongoDB } from './config/nosqlDataBase';
 import { setupSwagger } from './config/swagger';
-import imageRoutes from './routes/image.routes';
-import businessRoutes from './routes/business.routes';
+
+// ? Utils and custom modules
+import { loggerXiconemi } from './utils/colorLogs';
 import { AppError } from './utils/errorApp';
 
-// import message
-import { createServer } from 'http';
-import { Server as SocketServer, Socket } from 'socket.io';
+// ? Middleware
+import errorHandler from './middleware/errorHandler';
+
+// ? Models
 import { MessageModel } from './models/chat.model';
-import { connectToMongoDB } from './config/nosqlDataBase';
-import chatRotes from './routes/chat.routes';
-import plansRoutes from './routes/plan.routes';
+
+// ? Routes
+import routes from './routes';
 
 export class Server {
   private app: express.Express;
@@ -58,19 +55,7 @@ export class Server {
       res.send('This is the API of the app');
     });
 
-    this.app.use('/api/users', userRoutes);
-    this.app.use('/api/auth', authRoutes);
-    this.app.use('/api/images', imageRoutes);
-    this.app.use('/api/businesses', businessRoutes);
-    this.app.use('/api/promotions', promotionRoutes);
-    this.app.use('/api/locations', locationRoutes);
-    this.app.use('/api/events', eventRoutes);
-    this.app.use('/api/itineraries', itineraryRoutes);
-    this.app.use('/api/points', pointsRoutes);
-    this.app.use('/api/chat', chatRotes);
-    this.app.use('api/routes', routesRoutes)
-    this.app.use('/api/plans', plansRoutes)
-    this.app.use('/api/stats', statsRouter);
+    this.app.use('/api', routes);
 
     this.app.use('*', (req, res, next) => {
       next(new AppError('Route not found', 404));

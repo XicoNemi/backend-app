@@ -14,6 +14,6 @@ router.get("/", verifyToken, getAllUserHasRoutes);
 router.get("/:id", verifyToken, getUserHasRoutesById);
 router.post("/", verifyToken, createUserHasRoutes);
 router.put("/:id", verifyToken, updateUserHasRoutes);
-router.delete("/:id", verifyToken, deleteUserHasRoutes);
+router.delete("/delete/:id", verifyToken, deleteUserHasRoutes);
 
 export default router;

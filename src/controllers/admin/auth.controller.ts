@@ -1,11 +1,11 @@
-// auth.controller.ts
-import e, { NextFunction, Request, Response } from 'express';
+// admin/auth.controller.ts
+import { NextFunction, Request, Response } from 'express';
 import { OAuth2Client } from 'google-auth-library';
-import { UserModel } from '../models/user.model';
-import { generateToken } from '../services/auth.service';
-import { comparePassword, hashPassword } from '../utils/bcrypt';
+import { UserModel } from '../../models/user.model';
+import { generateToken } from '../../services/auth.service';
+import { comparePassword, hashPassword } from '../../utils/bcrypt';
 import { PrismaClient } from '@prisma/client';
-import { AppError } from '../utils/errorApp';
+import { AppError } from '../../utils/errorApp';
 import { validate as IsUUID } from 'uuid';
 import axios from 'axios';
 
@@ -65,7 +65,6 @@ export const googleAuth = async (
   next: NextFunction
 ): Promise<void> => {
   const { tokenId } = req.body;
-  console.log(req.body);
   try {
     const ticket = await client.verifyIdToken({
       idToken: tokenId,
@@ -78,21 +77,17 @@ export const googleAuth = async (
       return next(new AppError('Google authentication failed', 400));
     }
 
-    const superAdmin = await prisma.users.findFirst({
-      where: { type: 'SuperAdmin' },
+    const user = await prisma.users.findFirst({
+      where: {
+        email: payload.email,
+        type: {
+          in: ['SuperAdmin', 'BusinessOwner'],
+        },
+      },
     });
 
-    if (!superAdmin) {
-      return next(new AppError('SuperAdmin not found', 404));
-    }
-
-    if (payload.email !== superAdmin.email) {
-      return next(new AppError('Access denied. You are not an admin.', 403));
-    }
-
-    const user = await userModel.getUserByEmail(superAdmin.email);
     if (!user) {
-      return next(new AppError('User not found', 404));
+      return next(new AppError('Access denied. You are not authorized.', 403));
     }
 
     const token = generateToken(user);
@@ -117,7 +112,7 @@ export const signUp = async (req: Request, res: Response, next: NextFunction) =>
 export const signIn = async (
   req: Request,
   res: Response,
-  next: Function
+  next: NextFunction
 ): Promise<void> => {
   try {
     if (!req.body.email || !req.body.password) {
@@ -128,6 +123,10 @@ export const signIn = async (
     const user = await userModel.getUserByEmail(email);
     if (!user) {
       return next(new AppError('User not found', 404));
+    }
+
+    if (user.type === 'Common') {
+      return next(new AppError('Access denied. You are not authorized.', 403));
     }
 
     const isPasswordValid: boolean = await comparePassword(password, user.password);
@@ -188,7 +187,7 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
 
     const hashedPassword = await hashPassword(newPassword);
     console.log(newPassword, oldPassword);
-    
+
     await userModel.updatePassword(id, hashedPassword);
 
     res.status(200).json({ message: 'Password updated successfully' });
