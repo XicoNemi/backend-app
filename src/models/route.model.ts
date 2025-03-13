@@ -1,5 +1,6 @@
 import { PrismaClient, Routes } from "@prisma/client";
 import { z, ZodError } from "zod";
+import { AppError } from "../utils/errorApp";
 
 const prisma = new PrismaClient();
 
@@ -24,6 +25,18 @@ export class RoutesModel {
         }
         catch (error) {
             return { message: "Error desconocido." };
+        }
+    }
+
+    async getRoute(id: string) {
+        try {
+            const route = await prisma.routes.findUnique({ where: { id } });
+
+            if (!route) throw new AppError('Ruta no encontrada', 404);
+            return route;
+        }
+        catch (error) {
+            throw error
         }
     }
 
