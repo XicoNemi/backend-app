@@ -35,3 +35,5 @@ config/*.secret
 package-lock.json
 
 *.sql
+
+google-service-account.json
