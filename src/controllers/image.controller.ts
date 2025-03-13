@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { AppError } from "../utils/errorApp";
 import cloudinary from "../config/cloudinary";
 
 const prisma = new PrismaClient();
@@ -47,7 +48,7 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
 
         // Verificar si el registro existe antes de subir la imagen
         const existingRecord = await table.findUnique({
-            where: { [idField]: Number(id) },
+            where: { [idField]: id },
             select: { [idField]: true }
         });
 
@@ -70,10 +71,11 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
         });
 
         // Actualizar la imagen en la base de datos
-        const updatedRecord = await table.update({
-            where: { [idField]: Number(id) },
+        const updatedRecord = table.update({
+            where: { [idField]: id },
             data: { [imageField]: result.secure_url }
         });
+        console.log(updatedRecord)
 
         res.status(200).json({
             message: "Image uploaded successfully",
@@ -81,7 +83,6 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
         });
 
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: "Error uploading image" });
     }
 };
