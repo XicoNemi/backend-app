@@ -10,6 +10,6 @@ router.get('/:id', verifyToken, getEventById)
 router.post('/', verifyToken, createEvent)
 router.put('/:id', verifyToken, authorizeRole(['SuperAdmin', 'BusinessOwner']), updateEvent)
 router.delete('/delete/:id', verifyToken, authorizeRole(['SuperAdmin', 'BusinessOwner']), deleteEvent)
-router.get('/business/:id', verifyToken, authorizeRole(['SuperAdmin', 'BusinessOwner','Common']), getEventByBusinessId)
+router.get('/business/:id', verifyToken, authorizeRole(['SuperAdmin', 'BusinessOwner', 'Common']), getEventByBusinessId)
 
 export default router

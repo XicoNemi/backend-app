@@ -150,6 +150,7 @@ model Routes {
   distance      Float?
   time          Int?
   status        Boolean         @default(false)
+  url_image     String?
   //* RELATIONS
   owner         Users?          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   userHasRoute  userHasRoute[]

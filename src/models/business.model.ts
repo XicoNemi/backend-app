@@ -112,11 +112,14 @@ export class BusinessModel {
   }
 
   async getPublicBusinesses() {
-    return await prisma.businesses.findMany({
+    const businesses = await prisma.businesses.findMany({
       where: {
         status: true,
       },
-      take: 6,
     });
+    if (businesses.length == 0) {
+      return { message: 'No hay negocios disponibles.' };
+    } 
+    return businesses;
   }
 }
