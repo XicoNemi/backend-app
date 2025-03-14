@@ -74,11 +74,10 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
         });
 
         // Actualizar la imagen en la base de datos
-        const updatedRecord = table.update({
+        const updatedRecord = await table.update({
             where: { [idField]: id },
             data: { [imageField]: result.secure_url }
         });
-        console.log(updatedRecord)
 
         res.status(200).json({
             message: "Image uploaded successfully",
