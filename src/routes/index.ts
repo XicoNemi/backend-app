@@ -14,6 +14,7 @@ import routesRoutes from './routes.routes';
 import statsRoutes from './stats.routes';
 import userRoutes from './user.routes';
 import backupRoutes from './admin/backup.routes';
+import reviewRoutes from './review.routes';
 
 const router = Router();
 
@@ -31,5 +32,6 @@ router.use('/routes', routesRoutes);
 router.use('/plans', planRoutes);
 router.use('/stats', statsRoutes);
 router.use('/backup', backupRoutes);
+router.use('/reviews', reviewRoutes);
 
 export default router;
