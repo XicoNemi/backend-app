@@ -62,14 +62,11 @@ export class ReviewModel {
                 where: { businessId } // Asegurar que businessId está bien referenciado
             });
 
-            if (reviews.length === 0) {
-                throw new AppError("No hay reseñas para este negocio.", 404);
-            }
+            if (!reviews?.length) throw new AppError("No hay reseñas para este negocio.", 404);
 
             return reviews;
         } catch (error) {
-            console.error("Error en getReviewByBusinessId:", error);
-            throw new AppError("Error al obtener las reseñas.", 500);
+            throw new AppError("No hay reseñas para este negocio aun.", 404);
         }
     }
 
