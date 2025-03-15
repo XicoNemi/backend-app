@@ -59,5 +59,23 @@ const deleteReview = async (req: Request, res: Response, next: NextFunction) => 
     }
 };
 
+const getReviewsByBusinessId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const businessId = req.params.businessId;
+        if (!isUUID(businessId)) throw new AppError("Invalid UUID format", 400);
 
-export { getAllReviews, getReview, createReview, updateReview, deleteReview, };
+        const reviews = await reviewModel.getReviewByBusinessId(businessId);
+        res.status(200).json(reviews);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export {
+    getAllReviews,
+    getReview,
+    createReview,
+    updateReview,
+    deleteReview,
+    getReviewsByBusinessId
+};

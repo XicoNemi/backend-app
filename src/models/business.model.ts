@@ -110,16 +110,30 @@ export class BusinessModel {
     await prisma.businesses.delete({ where: { id } });
     return { message: 'Negocio eliminado correctamente.' };
   }
-
   async getPublicBusinesses() {
     const businesses = await prisma.businesses.findMany({
-      where: {
-        status: true,
-      },
+      include: {
+        reviews: {
+          select: {
+            rating: true
+          }
+        }
+      }
     });
-    if (businesses.length == 0) {
+  
+    // Calcular el promedio de rating por negocio
+    const businessesWithRatings = businesses.map(({ reviews, ...business }) => ({
+      ...business,
+      averageRating: reviews.length > 0
+        ? reviews.reduce((sum, review) => sum + review.rating.toNumber(), 0) / reviews.length
+        : 0
+    }));
+  
+    if (businessesWithRatings.length === 0) {
       return { message: 'No hay negocios disponibles.' };
-    } 
-    return businesses;
+    }
+  
+    return businessesWithRatings;
   }
+  
 }

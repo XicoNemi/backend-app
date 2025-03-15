@@ -7,7 +7,6 @@ const planModel = new PlanModel();
 const getAllPlans = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const plans = await planModel.getAllPlans();
-        console.log(plans);
         res.status(200).json(plans);
     } catch (error) {
         next(error);

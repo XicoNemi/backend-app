@@ -56,6 +56,21 @@ export class ReviewModel {
         }
     }
 
+    async getReviewByBusinessId(businessId: string) {
+        try {
+            const reviews = await prisma.reviews.findMany({
+                where: { businessId } // Asegurar que businessId está bien referenciado
+            });
+
+            if (!reviews?.length) throw new AppError("No hay reseñas para este negocio.", 404);
+
+            return reviews;
+        } catch (error) {
+            throw new AppError("No hay reseñas para este negocio aun.", 404);
+        }
+    }
+
+
     // ? UPDATE REVIEW
     async updateReview(id: string, data: Reviews) {
         try {
