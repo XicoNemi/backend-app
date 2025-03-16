@@ -140,6 +140,10 @@ export const getPublicBusinesses = async (
 ): Promise<void> => {
   try {
     const category = req.query.category as CategoryType;
+    if (!category) {
+      const businesses = await businessModel.getPublicBusinesses();
+      res.status(200).json(businesses);
+    }
     const businesses = await businessModel.getPublicBusinesses(categoryEnum.parse(category));
     res.status(200).json(businesses);
   } catch (error) {

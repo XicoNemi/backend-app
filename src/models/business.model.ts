@@ -114,30 +114,56 @@ export class BusinessModel {
 
 
   async getPublicBusinesses(type?: CategoryType) {
-    const businesses = await prisma.businesses.findMany({
-      where: type ? { category: type } : undefined,
-      include: {
-        reviews: {
-          select: {
-            rating: true
+    if (type) {
+      const businesses = await prisma.businesses.findMany({
+        where: type ? { category: type } : undefined,
+        include: {
+          reviews: {
+            select: {
+              rating: true
+            }
           }
         }
+      });
+
+      // Calcular el promedio de rating por negocio
+      const businessesWithRatings = businesses.map(({ reviews, ...business }) => ({
+        ...business,
+        averageRating: reviews.length > 0
+          ? reviews.reduce((sum, review) => sum + review.rating.toNumber(), 0) / reviews.length
+          : 0
+      }));
+
+      if (businessesWithRatings.length === 0) {
+        return { message: 'No hay negocios disponibles.' };
       }
-    });
 
-    // Calcular el promedio de rating por negocio
-    const businessesWithRatings = businesses.map(({ reviews, ...business }) => ({
-      ...business,
-      averageRating: reviews.length > 0
-        ? reviews.reduce((sum, review) => sum + review.rating.toNumber(), 0) / reviews.length
-        : 0
-    }));
+      return businessesWithRatings;
+    } else {
+      const businesses = await prisma.businesses.findMany({
+        include: {
+          reviews: {
+            select: {
+              rating: true
+            }
+          }
+        }
+      });
 
-    if (businessesWithRatings.length === 0) {
-      return { message: 'No hay negocios disponibles.' };
+      // Calcular el promedio de rating por negocio
+      const businessesWithRatings = businesses.map(({ reviews, ...business }) => ({
+        ...business,
+        averageRating: reviews.length > 0
+          ? reviews.reduce((sum, review) => sum + review.rating.toNumber(), 0) / reviews.length
+          : 0
+      }));
+
+      if (businessesWithRatings.length === 0) {
+        return { message: 'No hay negocios disponibles.' };
+      }
+
+      return businessesWithRatings;
     }
-
-    return businessesWithRatings;
   }
 
 }
