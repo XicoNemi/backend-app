@@ -110,8 +110,12 @@ export class BusinessModel {
     await prisma.businesses.delete({ where: { id } });
     return { message: 'Negocio eliminado correctamente.' };
   }
-  async getPublicBusinesses() {
+
+
+
+  async getPublicBusinesses(type?: CategoryType) {
     const businesses = await prisma.businesses.findMany({
+      where: type ? { category: type } : undefined,
       include: {
         reviews: {
           select: {
@@ -120,7 +124,7 @@ export class BusinessModel {
         }
       }
     });
-  
+
     // Calcular el promedio de rating por negocio
     const businessesWithRatings = businesses.map(({ reviews, ...business }) => ({
       ...business,
@@ -128,12 +132,12 @@ export class BusinessModel {
         ? reviews.reduce((sum, review) => sum + review.rating.toNumber(), 0) / reviews.length
         : 0
     }));
-  
+
     if (businessesWithRatings.length === 0) {
       return { message: 'No hay negocios disponibles.' };
     }
-  
+
     return businessesWithRatings;
   }
-  
+
 }

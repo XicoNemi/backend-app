@@ -139,7 +139,8 @@ export const getPublicBusinesses = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const businesses = await businessModel.getPublicBusinesses();
+    const category = req.query.category as CategoryType;
+    const businesses = await businessModel.getPublicBusinesses(categoryEnum.parse(category));
     res.status(200).json(businesses);
   } catch (error) {
     next(error);
