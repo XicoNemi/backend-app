@@ -137,15 +137,17 @@ export const getPublicBusinesses = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> => {
+): Promise<any> => {
   try {
     const category = req.query.category as CategoryType;
+
     if (!category) {
       const businesses = await businessModel.getPublicBusinesses();
-      res.status(200).json(businesses);
+      return res.status(200).json(businesses); // ✅ RETURN para evitar continuar
     }
+
     const businesses = await businessModel.getPublicBusinesses(categoryEnum.parse(category));
-    res.status(200).json(businesses);
+    return res.status(200).json(businesses); // ✅ Aseguramos que solo se envía una respuesta
   } catch (error) {
     next(error);
   }
