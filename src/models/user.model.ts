@@ -29,6 +29,7 @@ export class UserModel {
   // ? GET ALL USERS
   async getAllUsers() {
     const users = await prisma.users.findMany({
+      where: { status: true },
       orderBy: { type: 'desc' },
     });
     return users;
@@ -236,11 +237,14 @@ export class UserModel {
       const isExist = await prisma.users.findUnique({ where: { id } });
       if (!isExist) throw new AppError('User not found', 404);
 
-      const userDeleted = await prisma.users.delete({ where: { id } });
+      const userUpdated = await prisma.users.update({
+        where: { id },
+        data: { status: false },
+      });
 
       return {
-        message: 'User deleted successfully',
-        userId: userDeleted.id,
+        message: 'User status updated to inactive successfully',
+        userId: userUpdated.id,
       };
     } catch (error) {
       throw new AppError(

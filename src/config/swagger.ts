@@ -7,6 +7,7 @@ import cors from 'cors';
 
 // const url = urlSwagger.production;
 const url = urlSwagger.production;
+const urllocal = urlSwagger.local;
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -18,7 +19,12 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
+        url: urllocal,
+        description: 'Servidor local',
+      },
+      {
         url: url,
+        description: 'Servidor de producción',
       },
     ],
     components: {
@@ -31,17 +37,17 @@ const options: swaggerJSDoc.Options = {
       },
     },
     tags: [
-      { name: 'Users', description: 'Operaciones sobre usuarios' },
       { name: 'Auth', description: 'Operaciones de autenticación' },
+      { name: 'Users', description: 'Operaciones sobre usuarios' },
       { name: 'Business', description: 'Operaciones sobre negocios' },
-      // { name: 'Promotions', description: 'Operaciones sobre promociones' },
-      // { name: 'Establishments', description: 'Gestión de establecimientos' },
-      // { name: 'Locations', description: 'Ubicaciones y puntos de interés' },
-      // { name: 'Events', description: 'Eventos y actividades' },
-      // { name: 'Itineraries', description: 'Gestión de itinerarios' },
+      { name: 'Location', description: 'Operaciones sobre ubicaciones' },
+      { name: 'Review', description: 'Operaciones sobre reseñas' },
+      { name: 'Event', description: 'Operaciones sobre eventos' },
+      { name: 'Backup', description: 'Operaciones de respaldo' },
+      { name: 'Stats', description: 'Operaciones de estadísticas' },
     ],
   },
-  apis: ['./src/routes/*.ts'],
+  apis: ['./src/routes/**/*.ts'],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
