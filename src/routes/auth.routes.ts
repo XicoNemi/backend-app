@@ -79,7 +79,7 @@ router.post('/sign-up', signUp);
  *             properties:
  *               email:
  *                 type: string
- *                 example: "octaviodevtech@gmail.com"
+ *                 example: "xiconemi@gmail.com"
  *               password:
  *                 type: string
  *                 example: "123456789"

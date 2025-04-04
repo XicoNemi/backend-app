@@ -3,9 +3,10 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { loggerXiconemi } from '../utils/colorLogs';
 import { urlSwagger } from '../utils/urlVerification';
+import cors from 'cors';
 
 // const url = urlSwagger.production;
-const url = urlSwagger.local;
+const url = urlSwagger.production;
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -32,6 +33,7 @@ const options: swaggerJSDoc.Options = {
     tags: [
       { name: 'Users', description: 'Operaciones sobre usuarios' },
       { name: 'Auth', description: 'Operaciones de autenticación' },
+      { name: 'Business', description: 'Operaciones sobre negocios' },
       // { name: 'Promotions', description: 'Operaciones sobre promociones' },
       // { name: 'Establishments', description: 'Gestión de establecimientos' },
       // { name: 'Locations', description: 'Ubicaciones y puntos de interés' },
@@ -45,6 +47,7 @@ const options: swaggerJSDoc.Options = {
 const swaggerSpec = swaggerJSDoc(options);
 
 export function setupSwagger(app: Express) {
+  app.use(cors());
   app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   loggerXiconemi('yellow', `Docs ${url}/docs`, 'swagger');
 }
