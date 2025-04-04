@@ -6,6 +6,7 @@ import {
   facebookAuth,
   deleteUserByEmail,
   changePassword,
+  logout,
 } from '../controllers/admin/auth.controller';
 import { signInCommon } from '../controllers/common/auth.controller';
 // import signInLimiter from '../services/rateLimitService';
@@ -90,7 +91,8 @@ router.post('/sign-up', signUp);
  */
 
 router.post('/sign-in', signIn);
-router.post('/sign-in-common', signInCommon)
+router.post('/logout', logout);
+router.post('/sign-in-common', signInCommon);
 
 /**
  * @swagger
