@@ -6,6 +6,7 @@ import { generateToken } from '../../services/auth.service';
 import { comparePassword, hashPassword } from '../../utils/bcrypt';
 import { PrismaClient } from '@prisma/client';
 import { AppError } from '../../utils/errorApp';
+import { addToBlacklist } from '../../middleware/tokenBlacklist';
 import { validate as IsUUID } from 'uuid';
 import axios from 'axios';
 
@@ -141,6 +142,18 @@ export const signIn = async (
   } catch (error) {
     next(error);
   }
+};
+
+export const logout = (req: Request, res: Response, next: NextFunction): void => {
+  const authHeader = req.header('Authorization');
+  const token =
+    authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+
+  if (token) {
+    addToBlacklist(token);
+  }
+
+  res.status(200).json({ message: 'Logout successful' });
 };
 
 export const deleteUserByEmail = async (

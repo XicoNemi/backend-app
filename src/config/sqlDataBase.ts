@@ -8,6 +8,8 @@ export async function connectToPostgres() {
     loggerXiconemi('green', 'Connected to Postgres database', 'mysql');
   } catch (error) {
     loggerXiconemi('red', 'Error connecting to Postgres database', 'error');
+    console.log(error);
+    
   }
 }
 
