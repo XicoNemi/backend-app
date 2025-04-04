@@ -4,7 +4,7 @@ const redisClient = new Redis({
   host: process.env.REDIS_URL, 
   port: Number(process.env.REDIS_PORT),
   password: process.env.REDIS_PASS,
-  tls: {}, 
+  tls: { rejectUnauthorized: false },
   maxRetriesPerRequest: null, 
   retryStrategy: (times) => Math.min(times * 100, 3000), 
 });

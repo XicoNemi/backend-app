@@ -9,6 +9,7 @@ import {
   logout,
 } from '../controllers/admin/auth.controller';
 import { signInCommon } from '../controllers/common/auth.controller';
+import limiter from '../middleware/rateLimiter';
 
 const router: Router = Router();
 
@@ -135,7 +136,7 @@ router.post('/sign-up', signUp);
  *       400:
  *         description: Error en la validación de los datos
  */
-router.post('/sign-in', signIn);
+router.post('/sign-in', limiter, signIn);
 
 /**
  * @swagger
