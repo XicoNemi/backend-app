@@ -32,6 +32,7 @@ const options: swaggerJSDoc.Options = {
     tags: [
       { name: 'Users', description: 'Operaciones sobre usuarios' },
       { name: 'Auth', description: 'Operaciones de autenticación' },
+      { name: 'Business', description: 'Operaciones sobre negocios' },
       // { name: 'Promotions', description: 'Operaciones sobre promociones' },
       // { name: 'Establishments', description: 'Gestión de establecimientos' },
       // { name: 'Locations', description: 'Ubicaciones y puntos de interés' },
