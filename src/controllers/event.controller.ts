@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { EventModel } from "../models/event.model";
 import { validate as isUUID } from "uuid";
 import { AppError } from "../utils/errorApp";
+import sendPushNotifications from "../services/expoService";
 
 const eventModel = new EventModel()
 
@@ -32,6 +33,11 @@ const createEvent = async (req: Request, res: Response, next: NextFunction) => {
         const data = req.body
         const event = await eventModel.createEvent(data)
         res.json(event).status(201)
+        //enviar la notificacion a los clientes que tengan la app
+        const message = `Nuevo evento creado: ${data.name}. ¡No te lo pierdas!`;  // Personaliza el mensaje según el evento
+        await sendPushNotifications(message);
+        console.log('Notificaciones enviadas a los clientes.');
+        
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(500).json({ message: 'Internal server error', error: error.message })

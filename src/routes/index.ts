@@ -15,10 +15,12 @@ import statsRoutes from './stats.routes';
 import userRoutes from './user.routes';
 import backupRoutes from './admin/backup.routes';
 import reviewRoutes from './review.routes';
+import expoRoutes from './expo.routes'
 
 const router = Router();
 
 router.use('/users', userRoutes);
+router.use('/expo-token', expoRoutes)
 router.use('/auth', authRoutes);
 router.use('/images', imageRoutes);
 router.use('/businesses', businessRoutes);
