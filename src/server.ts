@@ -13,6 +13,7 @@ import { Server as SocketServer, Socket } from 'socket.io';
 import { connectToPostgres } from './config/sqlDataBase';
 import { connectToMongoDB } from './config/nosqlDataBase';
 import { setupSwagger } from './config/swagger';
+import { limiter } from './config/limiter';
 
 // ? Utils and custom modules
 import { loggerXiconemi } from './utils/colorLogs';
@@ -74,6 +75,8 @@ export class Server {
   }
 
   middlewares() {
+    this.app.use(limiter);
+
     this.app.use(
       cors({
         origin: '*', // Acepta cualquier origen - temporalmente
