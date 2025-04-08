@@ -53,10 +53,6 @@ const options: swaggerJSDoc.Options = {
       '- Luego prueba el flujo completo de login y obtención de JWT.\n' +
       '- Finalmente, accede a las rutas protegidas para manejar entidades como usuarios, negocios o reseñas.\n' +
       '\n' +
-      '### 🧪 Entornos disponibles\n' +
-      '- Local: http://localhost:3000\n' +
-      '- Producción: https://api.xiconemi.com\n' +
-      '\n' +
       '---\n' +
       'Gracias por formar parte del ecosistema **XicoNemi** 🚀\n',
     
